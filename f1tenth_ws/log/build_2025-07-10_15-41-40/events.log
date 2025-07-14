@@ -1,0 +1,105 @@
+[0.000000] (-) TimerEvent: {}
+[0.000904] (-) JobUnselected: {'identifier': 'ackermann_mux'}
+[0.001411] (-) JobUnselected: {'identifier': 'f1tenth_gym_ros'}
+[0.001668] (-) JobUnselected: {'identifier': 'f1tenth_stack'}
+[0.002242] (-) JobUnselected: {'identifier': 'joy_teleop'}
+[0.003049] (-) JobUnselected: {'identifier': 'key_teleop'}
+[0.003750] (-) JobUnselected: {'identifier': 'mouse_teleop'}
+[0.004252] (-) JobUnselected: {'identifier': 'particle_filter'}
+[0.004366] (-) JobUnselected: {'identifier': 'teleop_tools'}
+[0.004419] (-) JobUnselected: {'identifier': 'teleop_tools_msgs'}
+[0.004585] (-) JobUnselected: {'identifier': 'vesc'}
+[0.004664] (-) JobUnselected: {'identifier': 'vesc_ackermann'}
+[0.005352] (-) JobUnselected: {'identifier': 'vesc_driver'}
+[0.005400] (-) JobUnselected: {'identifier': 'vesc_msgs'}
+[0.005511] (adp_controller) JobQueued: {'identifier': 'adp_controller', 'dependencies': OrderedDict()}
+[0.008682] (adp_controller) JobStarted: {'identifier': 'adp_controller'}
+[0.099012] (-) TimerEvent: {}
+[0.199877] (-) TimerEvent: {}
+[0.300552] (-) TimerEvent: {}
+[0.401212] (-) TimerEvent: {}
+[0.501889] (-) TimerEvent: {}
+[0.602591] (-) TimerEvent: {}
+[0.703286] (-) TimerEvent: {}
+[0.803950] (-) TimerEvent: {}
+[0.904613] (-) TimerEvent: {}
+[1.005311] (-) TimerEvent: {}
+[1.106699] (-) TimerEvent: {}
+[1.207755] (-) TimerEvent: {}
+[1.308387] (-) TimerEvent: {}
+[1.409009] (-) TimerEvent: {}
+[1.509649] (-) TimerEvent: {}
+[1.610531] (-) TimerEvent: {}
+[1.711218] (-) TimerEvent: {}
+[1.811863] (-) TimerEvent: {}
+[1.912569] (-) TimerEvent: {}
+[2.013077] (-) TimerEvent: {}
+[2.113654] (-) TimerEvent: {}
+[2.214377] (-) TimerEvent: {}
+[2.315033] (-) TimerEvent: {}
+[2.415857] (-) TimerEvent: {}
+[2.516451] (-) TimerEvent: {}
+[2.617078] (-) TimerEvent: {}
+[2.717822] (-) TimerEvent: {}
+[2.763745] (adp_controller) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/adp_controller', 'build', '--build-base', '/home/can-02/Desktop/f1tenth_ws/build/adp_controller/build', 'install', '--record', '/home/can-02/Desktop/f1tenth_ws/build/adp_controller/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/can-02/Desktop/f1tenth_ws/src/adp_controller', 'env': {'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'can-02', 'SSH_AGENT_PID': '3686', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/can-02/Desktop/f1tenth_ws/install/vesc_driver/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_ackermann/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs/lib:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs/lib:/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/aarch64-linux-gnu:/opt/ros/galactic/lib:/usr/local/cuda-11.4/lib64:', 'HOME': '/home/can-02', 'OLDPWD': '/home/can-02/Desktop/f1tenth_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'MANAGERPID': '3589', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'IM_CONFIG_PHASE': '1', 'COLCON_PREFIX_PATH': '/home/can-02/Desktop/f1tenth_ws/install', 'ROS_DISTRO': 'galactic', 'LOGNAME': 'can-02', 'JOURNAL_STREAM': '8:59972', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'can-02', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'ROS_LOCALHOST_ONLY': '0', 'WINDOWPATH': '2', 'PATH': '/opt/ros/galactic/bin:/usr/local/cuda-11.4/bin:/home/can-02/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'SESSION_MANAGER': 'local/ubuntu:@/tmp/.ICE-unix/3721,unix/ubuntu:/tmp/.ICE-unix/3721', 'INVOCATION_ID': '96a4ca5b71214d27a856eabb46499459', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/7f288092_e92e_4db3_b313_322e6e286be5', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':1', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'RMW_IMPLEMENTATION': 'rmw_cyclonedds_cpp', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'GNOME_TERMINAL_SERVICE': ':1.82', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack:/home/can-02/Desktop/f1tenth_ws/install/vesc:/home/can-02/Desktop/f1tenth_ws/install/vesc_driver:/home/can-02/Desktop/f1tenth_ws/install/vesc_ackermann:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs:/home/can-02/Desktop/f1tenth_ws/install/particle_filter:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop:/home/can-02/Desktop/f1tenth_ws/install/key_teleop:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros:/home/can-02/Desktop/f1tenth_ws/install/adp_controller:/home/can-02/Desktop/f1tenth_ws/install/ackermann_mux:/opt/ros/galactic', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/can-02/Desktop/f1tenth_ws/build/adp_controller', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/can-02/Desktop/f1tenth_ws/build/adp_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/key_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages:/opt/ros/galactic/lib/python3.8/site-packages', 'COLCON': '1', 'VTE_VERSION': '6003', 'CMAKE_PREFIX_PATH': '/home/can-02/Desktop/f1tenth_ws/install/vesc:/home/can-02/Desktop/f1tenth_ws/install/vesc_driver:/home/can-02/Desktop/f1tenth_ws/install/vesc_ackermann:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs:/home/can-02/Desktop/f1tenth_ws/install/ackermann_mux'}, 'shell': False}
+[2.818313] (-) TimerEvent: {}
+[2.919082] (-) TimerEvent: {}
+[3.019730] (-) TimerEvent: {}
+[3.120606] (-) TimerEvent: {}
+[3.221248] (-) TimerEvent: {}
+[3.322093] (-) TimerEvent: {}
+[3.422758] (-) TimerEvent: {}
+[3.523678] (-) TimerEvent: {}
+[3.624185] (-) TimerEvent: {}
+[3.724742] (-) TimerEvent: {}
+[3.781130] (adp_controller) StdoutLine: {'line': b'running egg_info\n'}
+[3.782768] (adp_controller) StdoutLine: {'line': b'creating ../../build/adp_controller/adp_controller.egg-info\n'}
+[3.819520] (adp_controller) StdoutLine: {'line': b'writing ../../build/adp_controller/adp_controller.egg-info/PKG-INFO\n'}
+[3.820260] (adp_controller) StdoutLine: {'line': b'writing dependency_links to ../../build/adp_controller/adp_controller.egg-info/dependency_links.txt\n'}
+[3.820747] (adp_controller) StdoutLine: {'line': b'writing entry points to ../../build/adp_controller/adp_controller.egg-info/entry_points.txt\n'}
+[3.821208] (adp_controller) StdoutLine: {'line': b'writing requirements to ../../build/adp_controller/adp_controller.egg-info/requires.txt\n'}
+[3.821544] (adp_controller) StdoutLine: {'line': b'writing top-level names to ../../build/adp_controller/adp_controller.egg-info/top_level.txt\n'}
+[3.823551] (adp_controller) StdoutLine: {'line': b"writing manifest file '../../build/adp_controller/adp_controller.egg-info/SOURCES.txt'\n"}
+[3.824831] (-) TimerEvent: {}
+[3.925348] (-) TimerEvent: {}
+[3.933429] (adp_controller) StdoutLine: {'line': b"reading manifest file '../../build/adp_controller/adp_controller.egg-info/SOURCES.txt'\n"}
+[3.935271] (adp_controller) StdoutLine: {'line': b"writing manifest file '../../build/adp_controller/adp_controller.egg-info/SOURCES.txt'\n"}
+[3.935775] (adp_controller) StdoutLine: {'line': b'running build\n'}
+[3.936145] (adp_controller) StdoutLine: {'line': b'running build_py\n'}
+[3.937179] (adp_controller) StdoutLine: {'line': b'creating /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build\n'}
+[3.937622] (adp_controller) StdoutLine: {'line': b'creating /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib\n'}
+[3.937941] (adp_controller) StdoutLine: {'line': b'creating /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller\n'}
+[3.938231] (adp_controller) StdoutLine: {'line': b'copying adp_controller/adp_raceline_control.py -> /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller\n'}
+[3.938502] (adp_controller) StdoutLine: {'line': b'copying adp_controller/__init__.py -> /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller\n'}
+[3.938800] (adp_controller) StdoutLine: {'line': b'copying adp_controller/frenet_error_node.py -> /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller\n'}
+[3.939117] (adp_controller) StdoutLine: {'line': b'running install\n'}
+[3.950409] (adp_controller) StdoutLine: {'line': b'running install_lib\n'}
+[3.990660] (adp_controller) StdoutLine: {'line': b'creating /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller\n'}
+[3.991304] (adp_controller) StdoutLine: {'line': b'copying /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller/adp_raceline_control.py -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller\n'}
+[3.991599] (adp_controller) StdoutLine: {'line': b'copying /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller/__init__.py -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller\n'}
+[3.991809] (adp_controller) StdoutLine: {'line': b'copying /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller/frenet_error_node.py -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller\n'}
+[3.992562] (adp_controller) StdoutLine: {'line': b'byte-compiling /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/adp_raceline_control.py to adp_raceline_control.cpython-38.pyc\n'}
+[3.994161] (adp_controller) StdoutLine: {'line': b'byte-compiling /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/__init__.py to __init__.cpython-38.pyc\n'}
+[3.994584] (adp_controller) StdoutLine: {'line': b'byte-compiling /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/frenet_error_node.py to frenet_error_node.cpython-38.pyc\n'}
+[3.996023] (adp_controller) StdoutLine: {'line': b'running install_data\n'}
+[3.996281] (adp_controller) StdoutLine: {'line': b'copying package.xml -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller\n'}
+[3.996594] (adp_controller) StdoutLine: {'line': b'creating /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/launch\n'}
+[3.996819] (adp_controller) StdoutLine: {'line': b'copying launch/full_stack_sim.launch.py -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/launch\n'}
+[3.997065] (adp_controller) StdoutLine: {'line': b'creating /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/scripts\n'}
+[3.997297] (adp_controller) StdoutLine: {'line': b'creating /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/scripts/utils\n'}
+[3.997538] (adp_controller) StdoutLine: {'line': b'copying scripts/utils/adp_gain_table.npy -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/scripts/utils\n'}
+[3.997756] (adp_controller) StdoutLine: {'line': b'copying scripts/utils/vx_grid.npy -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/scripts/utils\n'}
+[3.997975] (adp_controller) StdoutLine: {'line': b'copying scripts/utils/kappa_grid.npy -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/scripts/utils\n'}
+[3.998185] (adp_controller) StdoutLine: {'line': b'running install_egg_info\n'}
+[4.025422] (-) TimerEvent: {}
+[4.040009] (adp_controller) StdoutLine: {'line': b'Copying ../../build/adp_controller/adp_controller.egg-info to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller-0.0.0-py3.8.egg-info\n'}
+[4.045377] (adp_controller) StdoutLine: {'line': b'running install_scripts\n'}
+[4.125594] (-) TimerEvent: {}
+[4.203081] (adp_controller) StdoutLine: {'line': b'Installing adp_raceline_control script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller\n'}
+[4.203768] (adp_controller) StdoutLine: {'line': b'Installing frenet_error_node script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller\n'}
+[4.204294] (adp_controller) StdoutLine: {'line': b"writing list of installed files to '/home/can-02/Desktop/f1tenth_ws/build/adp_controller/install.log'\n"}
+[4.225770] (-) TimerEvent: {}
+[4.321858] (adp_controller) CommandEnded: {'returncode': 0}
+[4.325868] (-) TimerEvent: {}
+[4.359763] (adp_controller) JobEnded: {'identifier': 'adp_controller', 'rc': 0}
+[4.361689] (-) EventReactorShutdown: {}

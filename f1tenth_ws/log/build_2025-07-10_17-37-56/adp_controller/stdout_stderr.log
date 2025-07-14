@@ -1,0 +1,22 @@
+running egg_info
+writing ../../build/adp_controller/adp_controller.egg-info/PKG-INFO
+writing dependency_links to ../../build/adp_controller/adp_controller.egg-info/dependency_links.txt
+writing entry points to ../../build/adp_controller/adp_controller.egg-info/entry_points.txt
+writing requirements to ../../build/adp_controller/adp_controller.egg-info/requires.txt
+writing top-level names to ../../build/adp_controller/adp_controller.egg-info/top_level.txt
+reading manifest file '../../build/adp_controller/adp_controller.egg-info/SOURCES.txt'
+writing manifest file '../../build/adp_controller/adp_controller.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+copying launch/full_stack_launch.py -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/share/adp_controller/launch
+running install_egg_info
+removing '/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller-0.0.0-py3.8.egg-info' (and everything under it)
+Copying ../../build/adp_controller/adp_controller.egg-info to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller-0.0.0-py3.8.egg-info
+running install_scripts
+Installing adp_raceline_control script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller
+Installing frenet_error_node script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller
+Installing raceline_publisher script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller
+writing list of installed files to '/home/can-02/Desktop/f1tenth_ws/build/adp_controller/install.log'

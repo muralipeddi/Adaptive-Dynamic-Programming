@@ -1,0 +1,47 @@
+[3.223s] Invoking command in '/home/can-02/Desktop/f1tenth_ws/src/f1tenth_system/teleop_tools/joy_teleop': CMAKE_PREFIX_PATH=/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs:/home/can-02/Desktop/f1tenth_ws/install/vesc:/home/can-02/Desktop/f1tenth_ws/install/vesc_driver:/home/can-02/Desktop/f1tenth_ws/install/vesc_ackermann:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools:/home/can-02/Desktop/f1tenth_ws/install/ackermann_mux LD_LIBRARY_PATH=/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_driver/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_ackermann/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs/lib:/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/aarch64-linux-gnu:/opt/ros/galactic/lib:/usr/local/cuda-11.4/lib64 PYTHONPATH=/home/can-02/Desktop/f1tenth_ws/build/joy_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/key_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages:/opt/ros/galactic/lib/python3.8/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../../build/joy_teleop build --build-base /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build install --record /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/install.log --install-scripts $base/lib/joy_teleop --single-version-externally-managed install_data
+[4.043s] /home/can-02/.local/lib/python3.8/site-packages/setuptools/dist.py:771: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[4.044s]   warnings.warn(
+[4.366s] running egg_info
+[4.370s] creating ../../../../build/joy_teleop/joy_teleop.egg-info
+[4.412s] writing ../../../../build/joy_teleop/joy_teleop.egg-info/PKG-INFO
+[4.413s] writing dependency_links to ../../../../build/joy_teleop/joy_teleop.egg-info/dependency_links.txt
+[4.415s] writing entry points to ../../../../build/joy_teleop/joy_teleop.egg-info/entry_points.txt
+[4.415s] writing requirements to ../../../../build/joy_teleop/joy_teleop.egg-info/requires.txt
+[4.416s] writing top-level names to ../../../../build/joy_teleop/joy_teleop.egg-info/top_level.txt
+[4.420s] writing manifest file '../../../../build/joy_teleop/joy_teleop.egg-info/SOURCES.txt'
+[4.545s] reading manifest file '../../../../build/joy_teleop/joy_teleop.egg-info/SOURCES.txt'
+[4.548s] writing manifest file '../../../../build/joy_teleop/joy_teleop.egg-info/SOURCES.txt'
+[4.549s] running build
+[4.549s] running build_py
+[4.550s] creating /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build
+[4.551s] creating /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib
+[4.552s] creating /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib/joy_teleop
+[4.552s] copying joy_teleop/joy_teleop.py -> /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib/joy_teleop
+[4.553s] copying joy_teleop/incrementer_server.py -> /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib/joy_teleop
+[4.554s] copying joy_teleop/__init__.py -> /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib/joy_teleop
+[4.555s] running install
+[4.570s] running install_lib
+[4.619s] creating /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop
+[4.619s] copying /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib/joy_teleop/joy_teleop.py -> /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop
+[4.620s] copying /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib/joy_teleop/incrementer_server.py -> /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop
+[4.621s] copying /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build/lib/joy_teleop/__init__.py -> /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop
+[4.623s] byte-compiling /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop/joy_teleop.py to joy_teleop.cpython-38.pyc
+[4.629s] byte-compiling /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop/incrementer_server.py to incrementer_server.cpython-38.pyc
+[4.632s] byte-compiling /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop/__init__.py to __init__.cpython-38.pyc
+[4.634s] running install_data
+[4.634s] copying package.xml -> /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/joy_teleop
+[4.635s] creating /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/joy_teleop/config
+[4.636s] copying config/joy_teleop_example.yaml -> /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/joy_teleop/config
+[4.637s] creating /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/joy_teleop/launch
+[4.638s] copying launch/example.launch.py -> /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/joy_teleop/launch
+[4.639s] creating /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/ament_index
+[4.639s] creating /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/ament_index/resource_index
+[4.640s] creating /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/ament_index/resource_index/packages
+[4.640s] copying resource/joy_teleop -> /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/share/ament_index/resource_index/packages
+[4.641s] running install_egg_info
+[4.687s] Copying ../../../../build/joy_teleop/joy_teleop.egg-info to /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages/joy_teleop-0.3.0-py3.8.egg-info
+[4.690s] running install_scripts
+[4.868s] Installing incrementer_server script to /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/joy_teleop
+[4.869s] Installing joy_teleop script to /home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/joy_teleop
+[4.870s] writing list of installed files to '/home/can-02/Desktop/f1tenth_ws/build/joy_teleop/install.log'
+[5.026s] Invoked command in '/home/can-02/Desktop/f1tenth_ws/src/f1tenth_system/teleop_tools/joy_teleop' returned '0': CMAKE_PREFIX_PATH=/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs:/home/can-02/Desktop/f1tenth_ws/install/vesc:/home/can-02/Desktop/f1tenth_ws/install/vesc_driver:/home/can-02/Desktop/f1tenth_ws/install/vesc_ackermann:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools:/home/can-02/Desktop/f1tenth_ws/install/ackermann_mux LD_LIBRARY_PATH=/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_driver/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_ackermann/lib:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs/lib:/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/aarch64-linux-gnu:/opt/ros/galactic/lib:/usr/local/cuda-11.4/lib64 PYTHONPATH=/home/can-02/Desktop/f1tenth_ws/build/joy_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/teleop_tools_msgs/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/vesc_msgs/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/key_teleop/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros/lib/python3.8/site-packages:/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages:/opt/ros/galactic/lib/python3.8/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../../build/joy_teleop build --build-base /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/build install --record /home/can-02/Desktop/f1tenth_ws/build/joy_teleop/install.log --install-scripts $base/lib/joy_teleop --single-version-externally-managed install_data

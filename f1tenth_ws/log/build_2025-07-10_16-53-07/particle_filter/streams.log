@@ -1,0 +1,65 @@
+[6.230s] Invoking command in '/home/can-02/Desktop/f1tenth_ws/src/particle_filter': PYTHONPATH=/home/can-02/Desktop/f1tenth_ws/build/particle_filter/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/particle_filter build --build-base /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build install --record /home/can-02/Desktop/f1tenth_ws/build/particle_filter/install.log --install-scripts $base/lib/particle_filter --single-version-externally-managed install_data
+[7.260s] /home/can-02/.local/lib/python3.8/site-packages/setuptools/dist.py:771: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[7.260s]   warnings.warn(
+[7.599s] running egg_info
+[7.600s] creating ../../build/particle_filter/particle_filter.egg-info
+[7.642s] writing ../../build/particle_filter/particle_filter.egg-info/PKG-INFO
+[7.642s] writing dependency_links to ../../build/particle_filter/particle_filter.egg-info/dependency_links.txt
+[7.643s] writing entry points to ../../build/particle_filter/particle_filter.egg-info/entry_points.txt
+[7.643s] writing requirements to ../../build/particle_filter/particle_filter.egg-info/requires.txt
+[7.643s] writing top-level names to ../../build/particle_filter/particle_filter.egg-info/top_level.txt
+[7.647s] writing manifest file '../../build/particle_filter/particle_filter.egg-info/SOURCES.txt'
+[7.768s] reading manifest file '../../build/particle_filter/particle_filter.egg-info/SOURCES.txt'
+[7.771s] writing manifest file '../../build/particle_filter/particle_filter.egg-info/SOURCES.txt'
+[7.771s] running build
+[7.772s] running build_py
+[7.772s] creating /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build
+[7.772s] creating /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib
+[7.772s] creating /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib/particle_filter
+[7.773s] copying particle_filter/particle_filter.py -> /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib/particle_filter
+[7.773s] copying particle_filter/__init__.py -> /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib/particle_filter
+[7.773s] copying particle_filter/utils.py -> /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib/particle_filter
+[7.773s] running install
+[7.788s] running install_lib
+[7.844s] creating /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter
+[7.845s] copying /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib/particle_filter/particle_filter.py -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter
+[7.845s] copying /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib/particle_filter/__init__.py -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter
+[7.845s] copying /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build/lib/particle_filter/utils.py -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter
+[7.847s] byte-compiling /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter/particle_filter.py to particle_filter.cpython-38.pyc
+[7.856s] byte-compiling /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter/__init__.py to __init__.cpython-38.pyc
+[7.866s] byte-compiling /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter/utils.py to utils.cpython-38.pyc
+[7.868s] running install_data
+[7.868s] creating /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/ament_index
+[7.869s] creating /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/ament_index/resource_index
+[7.869s] creating /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/ament_index/resource_index/packages
+[7.869s] copying resource/particle_filter -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/ament_index/resource_index/packages
+[7.869s] copying package.xml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter
+[7.870s] creating /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.870s] copying maps/8th_square_2.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.870s] copying maps/firstSLAMf1tenth.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.872s] copying maps/8th_square.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.873s] copying maps/levine.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.882s] copying maps/firstSLAMf1tenth.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.883s] copying maps/8th_square.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.883s] copying maps/Lab823.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.884s] copying maps/8th_floor.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.884s] copying maps/8th_square_old.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.885s] copying maps/Lab823.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.885s] copying maps/levine.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.885s] copying maps/race3map.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.886s] copying maps/basement_fixed.map.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.886s] copying maps/8th_square_2.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.886s] copying maps/basement_fixed.png -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.886s] copying maps/8th_floor.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.887s] copying maps/race3map.pgm -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/maps
+[7.887s] creating /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/launch
+[7.888s] copying launch/localize_launch_xyz.py -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/launch
+[7.888s] copying launch/localize_launch.py -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/launch
+[7.888s] creating /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/config
+[7.888s] copying config/localize.yaml -> /home/can-02/Desktop/f1tenth_ws/install/particle_filter/share/particle_filter/config
+[7.889s] running install_egg_info
+[7.932s] Copying ../../build/particle_filter/particle_filter.egg-info to /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages/particle_filter-0.2.0-py3.8.egg-info
+[7.934s] running install_scripts
+[8.257s] Installing particle_filter script to /home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/particle_filter
+[8.257s] writing list of installed files to '/home/can-02/Desktop/f1tenth_ws/build/particle_filter/install.log'
+[8.497s] Invoked command in '/home/can-02/Desktop/f1tenth_ws/src/particle_filter' returned '0': PYTHONPATH=/home/can-02/Desktop/f1tenth_ws/build/particle_filter/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/can-02/Desktop/f1tenth_ws/install/particle_filter/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/particle_filter build --build-base /home/can-02/Desktop/f1tenth_ws/build/particle_filter/build install --record /home/can-02/Desktop/f1tenth_ws/build/particle_filter/install.log --install-scripts $base/lib/particle_filter --single-version-externally-managed install_data

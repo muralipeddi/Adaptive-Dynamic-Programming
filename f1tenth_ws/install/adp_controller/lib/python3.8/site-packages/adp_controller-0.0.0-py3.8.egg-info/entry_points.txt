@@ -1,0 +1,4 @@
+[console_scripts]
+adp_raceline_control = adp_controller.adp_raceline_control:main
+frenet_error_node = adp_controller.frenet_error_node:main
+raceline_publisher = adp_controller.raceline_publisher:main

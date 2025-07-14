@@ -1,0 +1,26 @@
+[2.906s] Invoking command in '/home/can-02/Desktop/f1tenth_ws/src/adp_controller': PYTHONPATH=/home/can-02/Desktop/f1tenth_ws/build/adp_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/adp_controller build --build-base /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build install --record /home/can-02/Desktop/f1tenth_ws/build/adp_controller/install.log --single-version-externally-managed install_data
+[3.976s] running egg_info
+[4.048s] writing ../../build/adp_controller/adp_controller.egg-info/PKG-INFO
+[4.050s] writing dependency_links to ../../build/adp_controller/adp_controller.egg-info/dependency_links.txt
+[4.051s] writing entry points to ../../build/adp_controller/adp_controller.egg-info/entry_points.txt
+[4.051s] writing requirements to ../../build/adp_controller/adp_controller.egg-info/requires.txt
+[4.051s] writing top-level names to ../../build/adp_controller/adp_controller.egg-info/top_level.txt
+[4.138s] reading manifest file '../../build/adp_controller/adp_controller.egg-info/SOURCES.txt'
+[4.141s] writing manifest file '../../build/adp_controller/adp_controller.egg-info/SOURCES.txt'
+[4.141s] running build
+[4.142s] running build_py
+[4.142s] copying adp_controller/frenet_error_node.py -> /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller
+[4.143s] running install
+[4.156s] running install_lib
+[4.198s] copying /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build/lib/adp_controller/frenet_error_node.py -> /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller
+[4.200s] byte-compiling /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/frenet_error_node.py to frenet_error_node.cpython-38.pyc
+[4.203s] running install_data
+[4.204s] running install_egg_info
+[4.247s] removing '/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller-0.0.0-py3.8.egg-info' (and everything under it)
+[4.248s] Copying ../../build/adp_controller/adp_controller.egg-info to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller-0.0.0-py3.8.egg-info
+[4.250s] running install_scripts
+[4.413s] Installing adp_raceline_control script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller
+[4.414s] Installing frenet_error_node script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller
+[4.414s] Installing raceline_publisher script to /home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller
+[4.415s] writing list of installed files to '/home/can-02/Desktop/f1tenth_ws/build/adp_controller/install.log'
+[4.564s] Invoked command in '/home/can-02/Desktop/f1tenth_ws/src/adp_controller' returned '0': PYTHONPATH=/home/can-02/Desktop/f1tenth_ws/build/adp_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/adp_controller build --build-base /home/can-02/Desktop/f1tenth_ws/build/adp_controller/build install --record /home/can-02/Desktop/f1tenth_ws/build/adp_controller/install.log --single-version-externally-managed install_data

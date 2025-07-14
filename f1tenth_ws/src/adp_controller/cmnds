@@ -1,0 +1,10 @@
+source /opt/ros/galactic/setup.bash
+source /opt/ros/galactic/setup.bash
+
+Rviz2: ros2 launch f1tenth_gym_ros gym_bridge_launch.py
+
+ADP_controller: ros2 launch adp_controller full_stack_launch.py
+
+frenet_error_node: ros2 run adp_controller frenet_error_node
+
+

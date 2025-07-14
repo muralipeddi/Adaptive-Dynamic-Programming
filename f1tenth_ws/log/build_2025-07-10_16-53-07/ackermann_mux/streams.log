@@ -1,0 +1,106 @@
+[0.117s] Invoking command in '/home/can-02/Desktop/f1tenth_ws/build/ackermann_mux': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop:/home/can-02/Desktop/f1tenth_ws/install/particle_filter:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop:/home/can-02/Desktop/f1tenth_ws/install/key_teleop:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros:/home/can-02/Desktop/f1tenth_ws/install/adp_controller:/opt/ros/galactic /usr/bin/cmake /home/can-02/Desktop/f1tenth_ws/src/f1tenth_system/ackermann_mux -DCMAKE_INSTALL_PREFIX=/home/can-02/Desktop/f1tenth_ws/install/ackermann_mux
+[3.562s] -- The C compiler identification is GNU 9.4.0
+[3.563s] -- The CXX compiler identification is GNU 9.4.0
+[3.563s] -- Check for working C compiler: /usr/bin/cc
+[3.563s] -- Check for working C compiler: /usr/bin/cc -- works
+[3.563s] -- Detecting C compiler ABI info
+[3.563s] -- Detecting C compiler ABI info - done
+[3.564s] -- Detecting C compile features
+[3.564s] -- Detecting C compile features - done
+[3.564s] -- Check for working CXX compiler: /usr/bin/c++
+[3.564s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[3.564s] -- Detecting CXX compiler ABI info
+[3.564s] -- Detecting CXX compiler ABI info - done
+[3.565s] -- Detecting CXX compile features
+[3.565s] -- Detecting CXX compile features - done
+[3.565s] -- Found ament_cmake: 1.1.6 (/opt/ros/galactic/share/ament_cmake/cmake)
+[3.565s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[3.565s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[3.565s] -- Found rclcpp: 9.2.2 (/opt/ros/galactic/share/rclcpp/cmake)
+[3.565s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.566s] -- Found rosidl_adapter: 2.2.3 (/opt/ros/galactic/share/rosidl_adapter/cmake)
+[3.566s] -- Found OpenSSL: /usr/lib/aarch64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[3.566s] -- Found FastRTPS: /opt/ros/galactic/include  
+[3.566s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[3.566s] -- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)
+[3.566s] -- Found rmw_cyclonedds_cpp: 0.22.6 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)
+[3.567s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[3.567s] -- Looking for pthread.h
+[3.567s] -- Looking for pthread.h - found
+[3.567s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[3.567s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+[3.567s] -- Looking for pthread_create in pthreads
+[3.567s] -- Looking for pthread_create in pthreads - not found
+[3.568s] -- Looking for pthread_create in pthread
+[3.568s] -- Looking for pthread_create in pthread - found
+[3.568s] -- Found Threads: TRUE  
+[3.760s] -- Found ackermann_msgs: 2.0.2 (/opt/ros/galactic/share/ackermann_msgs/cmake)
+[3.836s] -- Found diagnostic_updater: 2.1.3 (/opt/ros/galactic/share/diagnostic_updater/cmake)
+[4.107s] -- Found ament_lint_auto: 0.10.7 (/opt/ros/galactic/share/ament_lint_auto/cmake)
+[4.425s] -- Found python_cmake_module: 0.8.1 (/opt/ros/galactic/share/python_cmake_module/cmake)
+[4.483s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3.5") 
+[4.498s] -- Found PythonLibs: /usr/lib/aarch64-linux-gnu/libpython3.8.so (found suitable version "3.8.10", minimum required is "3.5") 
+[4.498s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[4.499s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.8
+[4.499s] -- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.8.so
+[4.556s] -- Found PythonExtra: .so  
+[4.591s] -- Added test 'xmllint' to check XML markup files
+[4.593s] -- Added test 'copyright' to check source files copyright and LICENSE
+[4.598s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[4.598s] -- Configured cppcheck include dirs: /home/can-02/Desktop/f1tenth_ws/src/f1tenth_system/ackermann_mux/include
+[4.598s] -- Configured cppcheck exclude dirs and/or files: 
+[4.602s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[4.602s] -- Configured cpplint exclude dirs and/or files: 
+[4.604s] -- Added test 'flake8' to check Python code syntax and style conventions
+[4.606s] -- Added test 'lint_cmake' to check CMake code style
+[4.607s] -- Added test 'pep257' to check Python code against some of the style conventions in PEP 257
+[4.611s] -- Added test 'uncrustify' to check C / C++ code style
+[4.612s] -- Configured uncrustify additional arguments: 
+[4.623s] -- Configuring done
+[4.652s] -- Generating done
+[4.667s] -- Build files have been written to: /home/can-02/Desktop/f1tenth_ws/build/ackermann_mux
+[4.696s] Invoked command in '/home/can-02/Desktop/f1tenth_ws/build/ackermann_mux' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop:/home/can-02/Desktop/f1tenth_ws/install/particle_filter:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop:/home/can-02/Desktop/f1tenth_ws/install/key_teleop:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros:/home/can-02/Desktop/f1tenth_ws/install/adp_controller:/opt/ros/galactic /usr/bin/cmake /home/can-02/Desktop/f1tenth_ws/src/f1tenth_system/ackermann_mux -DCMAKE_INSTALL_PREFIX=/home/can-02/Desktop/f1tenth_ws/install/ackermann_mux
+[4.706s] Invoking command in '/home/can-02/Desktop/f1tenth_ws/build/ackermann_mux': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop:/home/can-02/Desktop/f1tenth_ws/install/particle_filter:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop:/home/can-02/Desktop/f1tenth_ws/install/key_teleop:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros:/home/can-02/Desktop/f1tenth_ws/install/adp_controller:/opt/ros/galactic /usr/bin/cmake --build /home/can-02/Desktop/f1tenth_ws/build/ackermann_mux -- -j6 -l6
+[4.824s] [35m[1mScanning dependencies of target ackermann_mux[0m
+[4.972s] [ 25%] [32mBuilding CXX object CMakeFiles/ackermann_mux.dir/src/ackermann_mux.cpp.o[0m
+[4.980s] [ 50%] [32mBuilding CXX object CMakeFiles/ackermann_mux.dir/src/ackermann_mux_node.cpp.o[0m
+[4.990s] [ 75%] [32mBuilding CXX object CMakeFiles/ackermann_mux.dir/src/ackermann_mux_diagnostics.cpp.o[0m
+[44.056s] [100%] [32m[1mLinking CXX executable ackermann_mux[0m
+[45.328s] [100%] Built target ackermann_mux
+[45.359s] Invoked command in '/home/can-02/Desktop/f1tenth_ws/build/ackermann_mux' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop:/home/can-02/Desktop/f1tenth_ws/install/particle_filter:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop:/home/can-02/Desktop/f1tenth_ws/install/key_teleop:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros:/home/can-02/Desktop/f1tenth_ws/install/adp_controller:/opt/ros/galactic /usr/bin/cmake --build /home/can-02/Desktop/f1tenth_ws/build/ackermann_mux -- -j6 -l6
+[45.368s] Invoking command in '/home/can-02/Desktop/f1tenth_ws/build/ackermann_mux': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop:/home/can-02/Desktop/f1tenth_ws/install/particle_filter:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop:/home/can-02/Desktop/f1tenth_ws/install/key_teleop:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros:/home/can-02/Desktop/f1tenth_ws/install/adp_controller:/opt/ros/galactic /usr/bin/cmake --install /home/can-02/Desktop/f1tenth_ws/build/ackermann_mux
+[45.395s] -- Install configuration: ""
+[45.395s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/lib/ackermann_mux/ackermann_mux
+[45.405s] -- Set runtime path of "/home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/lib/ackermann_mux/ackermann_mux" to ""
+[45.406s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/launch
+[45.406s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/launch/ackermann_mux_launch.py
+[45.407s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/config
+[45.407s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/config/ackermann_mux_locks.yaml
+[45.407s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/config/ackermann_mux_topics.yaml
+[45.408s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/config/joystick.yaml
+[45.408s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include
+[45.409s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include/ackermann_mux
+[45.409s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include/ackermann_mux/topic_handle.hpp
+[45.409s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include/ackermann_mux/params_helpers.hpp
+[45.410s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include/ackermann_mux/ackermann_mux.hpp
+[45.410s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include/ackermann_mux/ackermann_mux_diagnostics.hpp
+[45.411s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include/ackermann_mux/ackermann_mux_diagnostics_status.hpp
+[45.411s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/include/ackermann_mux/utils.hpp
+[45.412s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ament_index/resource_index/package_run_dependencies/ackermann_mux
+[45.413s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ament_index/resource_index/parent_prefix_path/ackermann_mux
+[45.413s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/environment/ament_prefix_path.sh
+[45.414s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/environment/ament_prefix_path.dsv
+[45.415s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/environment/path.sh
+[45.415s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/environment/path.dsv
+[45.416s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/local_setup.bash
+[45.416s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/local_setup.sh
+[45.417s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/local_setup.zsh
+[45.420s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/local_setup.dsv
+[45.420s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/package.dsv
+[45.420s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ament_index/resource_index/packages/ackermann_mux
+[45.421s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/cmake/ament_cmake_export_include_directories-extras.cmake
+[45.421s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/cmake/ament_cmake_export_dependencies-extras.cmake
+[45.421s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/cmake/ackermann_muxConfig.cmake
+[45.421s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/cmake/ackermann_muxConfig-version.cmake
+[45.422s] -- Installing: /home/can-02/Desktop/f1tenth_ws/install/ackermann_mux/share/ackermann_mux/package.xml
+[45.429s] Invoked command in '/home/can-02/Desktop/f1tenth_ws/build/ackermann_mux' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_stack:/home/can-02/Desktop/f1tenth_ws/install/joy_teleop:/home/can-02/Desktop/f1tenth_ws/install/particle_filter:/home/can-02/Desktop/f1tenth_ws/install/mouse_teleop:/home/can-02/Desktop/f1tenth_ws/install/key_teleop:/home/can-02/Desktop/f1tenth_ws/install/f1tenth_gym_ros:/home/can-02/Desktop/f1tenth_ws/install/adp_controller:/opt/ros/galactic /usr/bin/cmake --install /home/can-02/Desktop/f1tenth_ws/build/ackermann_mux
