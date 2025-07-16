@@ -35,9 +35,9 @@ class DataCollector(Node):
         x_now = np.array(msg.data[:4])  # ignore kappa
 
         if self.last_x is not None and self.last_u is not None:
-            self.x_buffer.append(self.last_x)
-            self.u_buffer.append(self.last_u)
-            self.next_x_buffer.append(x_now)
+            self.x_buffer.append(self.last_x.copy())
+            self.u_buffer.append(self.last_u.copy())
+            self.next_x_buffer.append(x_now.copy())
 
         self.last_x = x_now
 
@@ -49,14 +49,15 @@ class DataCollector(Node):
         save_dir = os.path.join(os.path.expanduser("~"), "Desktop/f1tenth_ws/src/adp_controller/data")
         os.makedirs(save_dir, exist_ok=True)
 
-        np.save(os.path.join(save_dir, "x.npy"), np.stack(self.x_buffer))
-        np.save(os.path.join(save_dir, "u.npy"), np.stack(self.u_buffer))
-        np.save(os.path.join(save_dir, "x_next.npy"), np.stack(self.next_x_buffer))
+        np.save(os.path.join(save_dir, "x.npy"), np.array(self.x_buffer))
+        np.save(os.path.join(save_dir, "u.npy"), np.array(self.u_buffer))
+        np.save(os.path.join(save_dir, "x_next.npy"), np.array(self.next_x_buffer))
 
         self.get_logger().info(f"Saved {len(self.x_buffer)} samples to {save_dir}")
         self.x_buffer.clear()
         self.u_buffer.clear()
         self.next_x_buffer.clear()
+
 
 def main(args=None):
     rclpy.init(args=args)
