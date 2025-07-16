@@ -1,5 +1,49 @@
-can-02@ubuntu:~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils$ python3 learn_value_function.py
-Traceback (most recent call last):
-  File "learn_value_function.py", line 40, in <module>
-    b_ls.append(-cost[0])  # scalar
-IndexError: invalid index to scalar variable.
+#!/usr/bin/env python3
+
+import numpy as np
+import os
+
+# === Load learned P ===
+data_dir = os.path.expanduser("~/Desktop/f1tenth_ws/src/adp_controller/data")
+P = np.load(os.path.join(data_dir, "P_learned.npy"))
+
+# === Use same vehicle model as in Version 1 ===
+Vx = 2.0  # average operating speed for linearization (m/s)
+
+# F1TENTH vehicle parameters
+m = 3.47      # kg
+Iz = 0.04712  # kg·m²
+lf = 0.125    # m
+lr = 0.125    # m
+Cf = 47.18    # N/rad
+Cr = 54.56    # N/rad
+
+# Linearized bicycle model (lateral dynamics)
+A = np.array([
+    [0, 1, 0, 0],
+    [0, -(2*Cf + 2*Cr)/(m*Vx), (2*Cf + 2*Cr)/m, -(2*Cf*lf - 2*Cr*lr)/(m*Vx)],
+    [0, 0, 0, 1],
+    [0, -(2*lf*Cf - 2*lr*Cr)/(Iz*Vx), (2*lf*Cf - 2*lr*Cr)/Iz, -(2*lf**2*Cf + 2*lr**2*Cr)/(Iz*Vx)]
+])
+
+B = np.array([[0],
+              [2*Cf/m],
+              [0],
+              [2*lf*Cf/Iz]])
+
+# Cost matrices (same as used in Version 1 and P learning)
+R = np.array([[1.0]])
+
+# === Compute K ===
+BtPB = B.T @ P @ B
+BtPA = B.T @ P @ A
+
+K = np.linalg.inv(R + BtPB) @ BtPA
+
+print("[✅] Computed new gain matrix K:")
+print(K)
+
+# === Save to file ===
+K_file = os.path.join(data_dir, "K_learned.npy")
+np.save(K_file, K)
+print("[💾] Saved to:", K_file)
