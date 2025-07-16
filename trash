@@ -1,61 +1,66 @@
 #!/usr/bin/env python3
 
+import rclpy
+from rclpy.node import Node
+
+from std_msgs.msg import Float32MultiArray
+from ackermann_msgs.msg import AckermannDriveStamped
+
 import numpy as np
 import os
+from collections import deque
 
-# === Load data ===
-data_dir = os.path.expanduser("~/Desktop/f1tenth_ws/src/adp_controller/data")
-x = np.load(os.path.join(data_dir, "x.npy"))         # shape: (N, 4)
-u = np.load(os.path.join(data_dir, "u.npy"))         # shape: (N, 1)
-x_next = np.load(os.path.join(data_dir, "x_next.npy"))  # shape: (N, 4)
+class DataCollector(Node):
+    def __init__(self):
+        super().__init__('data_collector')
 
-N, n = x.shape
+        # Buffers
+        self.x_buffer = deque()
+        self.u_buffer = deque()
+        self.next_x_buffer = deque()
 
-# === Cost matrices (same as version 1 LQR) ===
-Q = np.diag([5.0, 0.5, 5.0, 0.5])
-R = np.array([[1.0]])
+        self.last_x = None
+        self.last_u = None
 
-# === Build least squares system: A * p_vec = b ===
-def outer_sym(v):
-    """Flatten symmetric outer product v.T @ v"""
-    return np.array([
-        v[0]**2, v[0]*v[1], v[0]*v[2], v[0]*v[3],
-                    v[1]**2, v[1]*v[2], v[1]*v[3],
-                                v[2]**2, v[2]*v[3],
-                                            v[3]**2
-    ])
+        # Subscribers
+        self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
+        self.create_subscription(AckermannDriveStamped, '/drive', self.drive_callback, 10)
 
-A_ls = []
-b_ls = []
+        self.get_logger().info("Data Collector Initialized")
 
-for i in range(N):
-    x_t = x[i]
-    x_tp1 = x_next[i]
-    u_t = u[i]
+    def drive_callback(self, msg):
+        self.last_u = np.array([msg.drive.steering_angle])
 
-    phi = outer_sym(x_tp1) - outer_sym(x_t)
-    cost = x_t @ Q @ x_t + u_t @ R @ u_t
+    def frenet_callback(self, msg):
+        x_now = np.array(msg.data[:4])  # ignore kappa
 
-    A_ls.append(phi)
-    b_ls.append(-cost[0])  # scalar
+        if self.last_x is not None and self.last_u is not None:
+            self.x_buffer.append(self.last_x)
+            self.u_buffer.append(self.last_u)
+            self.next_x_buffer.append(x_now)
 
-A_ls = np.array(A_ls)  # shape: (N, 10)
-b_ls = np.array(b_ls)  # shape: (N,)
+        self.last_x = x_now
 
-# === Solve least squares ===
-p_vec, _, _, _ = np.linalg.lstsq(A_ls, b_ls, rcond=None)  # 10 values
+        # Save if buffer grows large
+        if len(self.x_buffer) >= 1000:
+            self.save_data()
 
-# === Reconstruct symmetric matrix P ===
-P = np.array([
-    [p_vec[0], p_vec[1], p_vec[2], p_vec[3]],
-    [p_vec[1], p_vec[4], p_vec[5], p_vec[6]],
-    [p_vec[2], p_vec[5], p_vec[7], p_vec[8]],
-    [p_vec[3], p_vec[6], p_vec[8], p_vec[9]],
-])
+    def save_data(self):
+        save_dir = os.path.join(os.path.expanduser("~"), "Desktop/f1tenth_ws/src/adp_controller/data")
+        os.makedirs(save_dir, exist_ok=True)
 
-print("[✅] Learned value function matrix P:")
-print(P)
+        np.save(os.path.join(save_dir, "x.npy"), np.stack(self.x_buffer))
+        np.save(os.path.join(save_dir, "u.npy"), np.stack(self.u_buffer))
+        np.save(os.path.join(save_dir, "x_next.npy"), np.stack(self.next_x_buffer))
 
-# === Save P to file ===
-np.save(os.path.join(data_dir, "P_learned.npy"), P)
-print("[💾] Saved to:", os.path.join(data_dir, "P_learned.npy"))
+        self.get_logger().info(f"Saved {len(self.x_buffer)} samples to {save_dir}")
+        self.x_buffer.clear()
+        self.u_buffer.clear()
+        self.next_x_buffer.clear()
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = DataCollector()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
