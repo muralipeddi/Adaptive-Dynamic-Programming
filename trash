@@ -7,7 +7,7 @@ from rclpy.node import Node
 
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Float32MultiArray
-from ackermann_msgs.msg import AckermannDriveStamped
+from geometry_msgs.msg import Twist
 
 import numpy as np
 import os
@@ -30,7 +30,7 @@ class ADPDataCollector(Node):
         # Subscriptions
         self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
         self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-        self.create_subscription(AckermannDriveStamped, '/drive', self.drive_callback, 10)
+        self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
 
         self.get_logger().info("Data Collector Initialized (Press Ctrl+C to stop and choose whether to save)")
 
@@ -38,13 +38,14 @@ class ADPDataCollector(Node):
         self.current_frenet = msg.data
         self.get_logger().debug(f"Received /frenet_errors: {self.current_frenet}")
 
-    def drive_callback(self, msg):
-        self.last_u = [msg.drive.steering_angle, msg.drive.speed]
-        self.get_logger().debug(f"Received /drive: {self.last_u}")
+    def cmd_vel_callback(self, msg):
+        # Interpret angular.z as steering and linear.x as speed
+        self.last_u = [msg.angular.z, msg.linear.x]
+        self.get_logger().debug(f"Received /cmd_vel: {self.last_u}")
 
     def odom_callback(self, msg):
         if self.current_frenet is None or self.last_u is None:
-            self.get_logger().debug("Waiting for both /frenet_errors and /drive...")
+            self.get_logger().debug("Waiting for both /frenet_errors and /cmd_vel...")
             return
 
         Vx = msg.twist.twist.linear.x
