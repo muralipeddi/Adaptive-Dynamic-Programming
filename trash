@@ -31,7 +31,7 @@ class ADPDataCollector(Node):
         self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
         self.create_subscription(AckermannDriveStamped, '/drive', self.drive_callback, 10)
 
-        self.get_logger().info("Data Collector Initialized (Press Ctrl+C to save and exit)")
+        self.get_logger().info("Data Collector Initialized (Press Ctrl+C to stop and choose whether to save)")
 
     def frenet_callback(self, msg):
         # ey, dot_ey, epsi, dot_epsi, kappa
@@ -93,7 +93,17 @@ class ADPDataCollector(Node):
         self.get_logger().info(f"Saved total of {x_all.shape[0]} samples to {save_path}")
 
     def destroy_node(self):
-        self.save_data()
+        if len(self.x_buffer) == 0:
+            self.get_logger().info("No data collected. Skipping save.")
+        else:
+            try:
+                answer = input("\nDo you want to save the collected data? [y/N]: ").strip().lower()
+                if answer == 'y':
+                    self.save_data()
+                else:
+                    self.get_logger().info("Data was not saved.")
+            except Exception as e:
+                self.get_logger().error(f"Error during save prompt: {e}")
         super().destroy_node()
 
 
@@ -103,7 +113,7 @@ def main(args=None):
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Keyboard interrupt received. Saving and shutting down...")
+        node.get_logger().info("Keyboard interrupt received. Prompting for save...")
     finally:
         node.destroy_node()
         rclpy.shutdown()
