@@ -25,6 +25,7 @@ class ADPDataCollector(Node):
 
         self.last_x = None
         self.last_u = None
+        self.current_frenet = None
 
         # Subscriptions
         self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
@@ -34,35 +35,34 @@ class ADPDataCollector(Node):
         self.get_logger().info("Data Collector Initialized (Press Ctrl+C to stop and choose whether to save)")
 
     def frenet_callback(self, msg):
-        # ey, dot_ey, epsi, dot_epsi, kappa
         self.current_frenet = msg.data
+        self.get_logger().debug(f"Received /frenet_errors: {self.current_frenet}")
 
     def drive_callback(self, msg):
-        # Store delta, speed
         self.last_u = [msg.drive.steering_angle, msg.drive.speed]
+        self.get_logger().debug(f"Received /drive: {self.last_u}")
 
     def odom_callback(self, msg):
-        if not hasattr(self, 'current_frenet') or self.last_u is None:
+        if self.current_frenet is None or self.last_u is None:
+            self.get_logger().debug("Waiting for both /frenet_errors and /drive...")
             return
 
         Vx = msg.twist.twist.linear.x
         kappa = self.current_frenet[4]
 
-        # Construct state: [ey, dot_ey, epsi, dot_epsi, s, Vx]
         ey, dot_ey, epsi, dot_epsi = self.current_frenet[:4]
-        s = 0.0  # Longitudinal progress can be added later if needed
+        s = 0.0
         x = [ey, dot_ey, epsi, dot_epsi, s, Vx]
 
         if self.last_x is not None:
-            # Save transition (x, u, x_next)
             self.x_buffer.append(self.last_x)
             self.u_buffer.append(self.last_u)
             self.x_next_buffer.append(x)
             self.vx_buffer.append(Vx)
             self.kappa_buffer.append(kappa)
 
-            if len(self.x_buffer) % 500 == 0:
-                self.get_logger().info(f"Collected {len(self.x_buffer)} new samples...")
+            if len(self.x_buffer) % 100 == 0:
+                self.get_logger().info(f"Collected {len(self.x_buffer)} samples...")
 
         self.last_x = x
 
@@ -109,6 +109,7 @@ class ADPDataCollector(Node):
 
 def main(args=None):
     rclpy.init(args=args)
+    rclpy.logging.set_logger_level('data_collector', rclpy.logging.LoggingSeverity.DEBUG)
     node = ADPDataCollector()
     try:
         rclpy.spin(node)
