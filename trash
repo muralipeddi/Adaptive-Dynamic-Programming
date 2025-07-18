@@ -7,7 +7,7 @@ from rclpy.node import Node
 
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Float32MultiArray
-from geometry_msgs.msg import Twist
+from ackermann_msgs.msg import AckermannDriveStamped
 
 import numpy as np
 import os
@@ -16,13 +16,14 @@ class ADPDataCollector(Node):
     def __init__(self):
         super().__init__('data_collector')
 
-        # Buffers
+        # Buffers for dataset
         self.x_buffer = []
         self.u_buffer = []
         self.x_next_buffer = []
         self.vx_buffer = []
         self.kappa_buffer = []
 
+        # Internal state
         self.last_x = None
         self.last_u = None
         self.current_frenet = None
@@ -30,30 +31,26 @@ class ADPDataCollector(Node):
         # Subscriptions
         self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
         self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-        self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
+        self.create_subscription(AckermannDriveStamped, '/drive', self.drive_callback, 10)
 
-        self.get_logger().info("Data Collector Initialized (Press Ctrl+C to stop and choose whether to save)")
+        self.get_logger().info("Data Collector Initialized (Ctrl+C to stop and save)")
 
     def frenet_callback(self, msg):
         self.current_frenet = msg.data
-        self.get_logger().debug(f"Received /frenet_errors: {self.current_frenet}")
 
-    def cmd_vel_callback(self, msg):
-        # Interpret angular.z as steering and linear.x as speed
-        self.last_u = [msg.angular.z, msg.linear.x]
-        self.get_logger().debug(f"Received /cmd_vel: {self.last_u}")
+    def drive_callback(self, msg):
+        self.last_u = [msg.drive.steering_angle, msg.drive.speed]
 
     def odom_callback(self, msg):
         if self.current_frenet is None or self.last_u is None:
-            self.get_logger().debug("Waiting for both /frenet_errors and /cmd_vel...")
             return
 
         Vx = msg.twist.twist.linear.x
         kappa = self.current_frenet[4]
 
+        # Extract Frenet state
         ey, dot_ey, epsi, dot_epsi = self.current_frenet[:4]
-        s = 0.0
-        x = [ey, dot_ey, epsi, dot_epsi, s, Vx]
+        x = [ey, dot_ey, epsi, dot_epsi]
 
         if self.last_x is not None:
             self.x_buffer.append(self.last_x)
@@ -91,7 +88,8 @@ class ADPDataCollector(Node):
                  x_next=x_next_all,
                  Vx=vx_all,
                  kappa=kappa_all)
-        self.get_logger().info(f"Saved total of {x_all.shape[0]} samples to {save_path}")
+
+        self.get_logger().info(f"Saved {x_all.shape[0]} samples to {save_path}")
 
     def destroy_node(self):
         if len(self.x_buffer) == 0:
@@ -104,18 +102,16 @@ class ADPDataCollector(Node):
                 else:
                     self.get_logger().info("Data was not saved.")
             except Exception as e:
-                self.get_logger().error(f"Error during save prompt: {e}")
+                self.get_logger().error(f"Save prompt error: {e}")
         super().destroy_node()
-
 
 def main(args=None):
     rclpy.init(args=args)
-    rclpy.logging.set_logger_level('data_collector', rclpy.logging.LoggingSeverity.DEBUG)
     node = ADPDataCollector()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Keyboard interrupt received. Prompting for save...")
+        node.get_logger().info("Keyboard interrupt. Asking to save...")
     finally:
         node.destroy_node()
         rclpy.shutdown()
