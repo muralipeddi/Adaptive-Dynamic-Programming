@@ -1,117 +1,63 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/data_collector.py
+# ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/lqr_data_collector.py
 
 #!/usr/bin/env python3
 
 import rclpy
 from rclpy.node import Node
-
-from nav_msgs.msg import Odometry
 from std_msgs.msg import Float32MultiArray
 from ackermann_msgs.msg import AckermannDriveStamped
-
+from nav_msgs.msg import Odometry
 import numpy as np
-import os
 
-class ADPDataCollector(Node):
+class LQRDataCollector(Node):
     def __init__(self):
-        super().__init__('data_collector')
+        super().__init__('lqr_data_collector')
 
-        # Buffers for dataset
-        self.x_buffer = []
-        self.u_buffer = []
-        self.x_next_buffer = []
-        self.vx_buffer = []
-        self.kappa_buffer = []
+        # --- Parameters --- #
+        self.fixed_speed = 3.0  # m/s (change this manually)
+        self.K = np.array([-1.5, -0.2, -2.0, -0.3])  # temporary gain
 
-        # Internal state
-        self.last_x = None
-        self.last_u = None
-        self.current_frenet = None
+        # --- State --- #
+        self.frenet_errors = None
+        self.vx = 0.0
 
-        # Subscriptions
+        # --- Interfaces --- #
         self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
         self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-        self.create_subscription(AckermannDriveStamped, '/drive', self.drive_callback, 10)
+        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
+        self.create_timer(0.02, self.control_loop)  # 50 Hz
 
-        self.get_logger().info("Data Collector Initialized (Ctrl+C to stop and save)")
+        self.get_logger().info(f"LQR Data Collector running at {self.fixed_speed:.1f} m/s")
 
     def frenet_callback(self, msg):
-        self.current_frenet = msg.data
-
-    def drive_callback(self, msg):
-        self.last_u = [msg.drive.steering_angle, msg.drive.speed]
+        self.frenet_errors = msg.data
 
     def odom_callback(self, msg):
-        if self.current_frenet is None or self.last_u is None:
+        self.vx = msg.twist.twist.linear.x
+
+    def control_loop(self):
+        if self.frenet_errors is None:
             return
 
-        Vx = msg.twist.twist.linear.x
-        kappa = self.current_frenet[4]
+        e_y, dot_e_y, e_psi, dot_e_psi, _ = self.frenet_errors
+        x = np.array([e_y, dot_e_y, e_psi, dot_e_psi])
 
-        # Extract Frenet state
-        ey, dot_ey, epsi, dot_epsi = self.current_frenet[:4]
-        x = [ey, dot_ey, epsi, dot_epsi]
+        delta = float(-np.dot(self.K, x))
+        delta = np.clip(delta, -0.4189, 0.4189)
 
-        if self.last_x is not None:
-            self.x_buffer.append(self.last_x)
-            self.u_buffer.append(self.last_u)
-            self.x_next_buffer.append(x)
-            self.vx_buffer.append(Vx)
-            self.kappa_buffer.append(kappa)
+        msg = AckermannDriveStamped()
+        msg.drive.steering_angle = delta
+        msg.drive.speed = self.fixed_speed
+        self.drive_pub.publish(msg)
 
-            if len(self.x_buffer) % 100 == 0:
-                self.get_logger().info(f"Collected {len(self.x_buffer)} samples...")
-
-        self.last_x = x
-
-    def save_data(self):
-        save_path = os.path.join(os.path.dirname(__file__), "adp_dataset.npz")
-
-        if os.path.exists(save_path):
-            old = np.load(save_path)
-            self.get_logger().info("Appending to existing dataset...")
-            x_all = np.concatenate([old['x'], self.x_buffer])
-            u_all = np.concatenate([old['u'], self.u_buffer])
-            x_next_all = np.concatenate([old['x_next'], self.x_next_buffer])
-            vx_all = np.concatenate([old['Vx'], self.vx_buffer])
-            kappa_all = np.concatenate([old['kappa'], self.kappa_buffer])
-        else:
-            x_all = np.array(self.x_buffer)
-            u_all = np.array(self.u_buffer)
-            x_next_all = np.array(self.x_next_buffer)
-            vx_all = np.array(self.vx_buffer)
-            kappa_all = np.array(self.kappa_buffer)
-
-        np.savez(save_path,
-                 x=x_all,
-                 u=u_all,
-                 x_next=x_next_all,
-                 Vx=vx_all,
-                 kappa=kappa_all)
-
-        self.get_logger().info(f"Saved {x_all.shape[0]} samples to {save_path}")
-
-    def destroy_node(self):
-        if len(self.x_buffer) == 0:
-            self.get_logger().info("No data collected. Skipping save.")
-        else:
-            try:
-                answer = input("\nDo you want to save the collected data? [y/N]: ").strip().lower()
-                if answer == 'y':
-                    self.save_data()
-                else:
-                    self.get_logger().info("Data was not saved.")
-            except Exception as e:
-                self.get_logger().error(f"Save prompt error: {e}")
-        super().destroy_node()
 
 def main(args=None):
     rclpy.init(args=args)
-    node = ADPDataCollector()
+    node = LQRDataCollector()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Keyboard interrupt. Asking to save...")
+        pass
     finally:
         node.destroy_node()
         rclpy.shutdown()
