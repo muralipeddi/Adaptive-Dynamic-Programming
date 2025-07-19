@@ -1,36 +1,56 @@
-can-02@ubuntu:~/Desktop/f1tenth_ws$ colcon build --packages-select adp_controller
-Starting >>> adp_controller
-Traceback (most recent call last):ler - 1.0s]
-  File "<string>", line 1, in <module>
-  File "/home/can-02/.local/lib/python3.8/site-packages/setuptools/_distutils/core.py", line 267, in run_setup
-    exec(code, g)
-  File "<string>", line 36
-    'adp_raceline_runner = adp_controller.adp_raceline_runner:main
-                                                                 ^
-SyntaxError: EOL while scanning string literal
---- stderr: adp_controller                   
-Traceback (most recent call last):
-  File "/usr/lib/python3/dist-packages/colcon_core/executor/__init__.py", line 91, in __call__
-    rc = await self.task(*args, **kwargs)
-  File "/usr/lib/python3/dist-packages/colcon_core/task/__init__.py", line 93, in __call__
-    return await task_method(*args, **kwargs)
-  File "/usr/lib/python3/dist-packages/colcon_ros/task/ament_python/build.py", line 51, in build
-    setup_py_data = get_setup_data(self.context.pkg, env)
-  File "/usr/lib/python3/dist-packages/colcon_core/task/python/__init__.py", line 20, in get_setup_data
-    return dict(pkg.metadata[key](env))
-  File "/usr/lib/python3/dist-packages/colcon_ros/package_augmentation/ros_ament_python.py", line 57, in getter
-    return get_setup_information(
-  File "/usr/lib/python3/dist-packages/colcon_python_setup_py/package_identification/python_setup_py.py", line 249, in get_setup_information
-    _setup_information_cache[hashable_env] = _get_setup_information(
-  File "/usr/lib/python3/dist-packages/colcon_python_setup_py/package_identification/python_setup_py.py", line 296, in _get_setup_information
-    result = subprocess.run(
-  File "/usr/lib/python3.8/subprocess.py", line 516, in run
-    raise CalledProcessError(retcode, process.args,
-subprocess.CalledProcessError: Command '['/usr/bin/python3', '-c', 'import sys;from contextlib import suppress;exec("with suppress(ImportError):    from setuptools.extern.packaging.specifiers    import SpecifierSet");exec("with suppress(ImportError):    from packaging.specifiers import SpecifierSet");from distutils.core import run_setup;dist = run_setup(    \'setup.py\', script_args=(\'--dry-run\',), stop_after=\'config\');skip_keys = (\'cmdclass\', \'distclass\', \'ext_modules\', \'metadata\');data = {    key: value for key, value in dist.__dict__.items()     if (        not key.startswith(\'_\') and         not callable(value) and         key not in skip_keys and         key not in dist.display_option_names    )};data[\'metadata\'] = {    k: v for k, v in dist.metadata.__dict__.items()     if k not in (\'license_files\', \'provides_extras\')};sys.stdout.buffer.write(repr(data).encode(\'utf-8\'))']' returned non-zero exit status 1.
----
-Failed   <<< adp_controller [1.17s, exited with code 1]
+# ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/generate_adp_gain_table.py
 
-Summary: 0 packages finished [2.30s]
-  1 package failed: adp_controller
-  1 package had stderr output: adp_controller
-Command '['/usr/bin/python3', '-c', 'import sys;from contextlib import suppress;exec("with suppress(ImportError):    from setuptools.extern.packaging.specifiers    import SpecifierSet");exec("with suppress(ImportError):    from packaging.specifiers import SpecifierSet");from distutils.core import run_setup;dist = run_setup(    \'setup.py\', script_args=(\'--dry-run\',), stop_after=\'config\');skip_keys = (\'cmdclass\', \'distclass\', \'ext_modules\', \'metadata\');data = {    key: value for key, value in dist.__dict__.items()     if (        not key.startswith(\'_\') and         not callable(value) and         key not in skip_keys and         key not in dist.display_option_names    )};data[\'metadata\'] = {    k: v for k, v in dist.metadata.__dict__.items()     if k not in (\'license_files\', \'provides_extras\')};sys.stdout.buffer.write(repr(data).encode(\'utf-8\'))']' returned non-zero exit status 1.
+#!/usr/bin/env python3
+
+import numpy as np
+from scipy import linalg
+import os
+
+# Vehicle parameters (example values — tune to your car)
+m = 3.47      # kg
+Iz = 0.04712  # kg*m^2
+lf = 0.125    # m
+lr = 0.125    # m
+Cf = 4.718e1  # N/rad
+Cr = 5.456e1  # N/rad
+
+# Cost matrices
+Q = np.diag([5.0, 0.5, 5.0, 0.5])
+R = np.array([[1.0]])
+
+# Discretization grid
+vx_grid = np.arange(0.5, 15.1, 0.5)   # [0.5, 1.0, ..., 15.0] m/s
+kappa_grid = np.linspace(-3.0, 3.0, 25)  # 25 points in [-3, 3]
+
+# Output shape: (V, K, 1, 4)
+K_table = np.zeros((len(vx_grid), len(kappa_grid), 1, 4))
+
+# Compute gain for each (Vx, kappa)
+for i, Vx in enumerate(vx_grid):
+    for j, kappa in enumerate(kappa_grid):
+        try:
+            A = np.array([
+                [0, 1, 0, 0],
+                [0, -(2*Cf + 2*Cr)/(m*Vx), (2*Cf + 2*Cr)/m, -(2*Cf*lf - 2*Cr*lr)/(m*Vx)],
+                [0, 0, 0, 1],
+                [0, -(2*Cf*lf - 2*Cr*lr)/(Iz*Vx), (2*Cf*lf - 2*Cr*lr)/Iz, -(2*Cf*lf**2 + 2*Cr*lr**2)/(Iz*Vx)]
+            ])
+
+            B = np.array([[0], [2*Cf/m], [0], [2*Cf*lf/Iz]])
+
+            # Solve continuous Riccati equation
+            P = linalg.solve_continuous_are(A, B, Q, R)
+            K = np.linalg.inv(R) @ B.T @ P
+            K_table[i, j, 0, :] = K
+
+        except Exception as e:
+            print(f"[WARNING] Riccati failed at Vx={Vx:.2f}, kappa={kappa:.2f}. Using zero gain.")
+            K_table[i, j, 0, :] = 0.0
+
+# Save
+save_dir = os.path.dirname(__file__)
+np.save(os.path.join(save_dir, "K_table.npy"), K_table)
+np.save(os.path.join(save_dir, "vx_grid.npy"), vx_grid)
+np.save(os.path.join(save_dir, "kappa_grid.npy"), kappa_grid)
+
+print(f"Saved: K_table {K_table.shape}, Vx grid {vx_grid.shape}, kappa grid {kappa_grid.shape}")
