@@ -1,80 +1,36 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/adp_controller/adp_raceline_runner.py
+can-02@ubuntu:~/Desktop/f1tenth_ws$ colcon build --packages-select adp_controller
+Starting >>> adp_controller
+Traceback (most recent call last):ler - 1.0s]
+  File "<string>", line 1, in <module>
+  File "/home/can-02/.local/lib/python3.8/site-packages/setuptools/_distutils/core.py", line 267, in run_setup
+    exec(code, g)
+  File "<string>", line 36
+    'adp_raceline_runner = adp_controller.adp_raceline_runner:main
+                                                                 ^
+SyntaxError: EOL while scanning string literal
+--- stderr: adp_controller                   
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/colcon_core/executor/__init__.py", line 91, in __call__
+    rc = await self.task(*args, **kwargs)
+  File "/usr/lib/python3/dist-packages/colcon_core/task/__init__.py", line 93, in __call__
+    return await task_method(*args, **kwargs)
+  File "/usr/lib/python3/dist-packages/colcon_ros/task/ament_python/build.py", line 51, in build
+    setup_py_data = get_setup_data(self.context.pkg, env)
+  File "/usr/lib/python3/dist-packages/colcon_core/task/python/__init__.py", line 20, in get_setup_data
+    return dict(pkg.metadata[key](env))
+  File "/usr/lib/python3/dist-packages/colcon_ros/package_augmentation/ros_ament_python.py", line 57, in getter
+    return get_setup_information(
+  File "/usr/lib/python3/dist-packages/colcon_python_setup_py/package_identification/python_setup_py.py", line 249, in get_setup_information
+    _setup_information_cache[hashable_env] = _get_setup_information(
+  File "/usr/lib/python3/dist-packages/colcon_python_setup_py/package_identification/python_setup_py.py", line 296, in _get_setup_information
+    result = subprocess.run(
+  File "/usr/lib/python3.8/subprocess.py", line 516, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/python3', '-c', 'import sys;from contextlib import suppress;exec("with suppress(ImportError):    from setuptools.extern.packaging.specifiers    import SpecifierSet");exec("with suppress(ImportError):    from packaging.specifiers import SpecifierSet");from distutils.core import run_setup;dist = run_setup(    \'setup.py\', script_args=(\'--dry-run\',), stop_after=\'config\');skip_keys = (\'cmdclass\', \'distclass\', \'ext_modules\', \'metadata\');data = {    key: value for key, value in dist.__dict__.items()     if (        not key.startswith(\'_\') and         not callable(value) and         key not in skip_keys and         key not in dist.display_option_names    )};data[\'metadata\'] = {    k: v for k, v in dist.metadata.__dict__.items()     if k not in (\'license_files\', \'provides_extras\')};sys.stdout.buffer.write(repr(data).encode(\'utf-8\'))']' returned non-zero exit status 1.
+---
+Failed   <<< adp_controller [1.17s, exited with code 1]
 
-#!/usr/bin/env python3
-
-import rclpy
-from rclpy.node import Node
-from std_msgs.msg import Float32MultiArray
-from ackermann_msgs.msg import AckermannDriveStamped
-from nav_msgs.msg import Odometry
-import numpy as np
-import argparse
-import sys
-
-class ADPRacelineRunner(Node):
-    def __init__(self, vmax):
-        super().__init__('adp_raceline_runner')
-        self.K = np.array([-1.5, -0.2, -2.0, -0.3])  # general-purpose gain
-        self.vmax = vmax  # user-defined max speed
-        self.kappa = 0.0
-        self.frenet_errors = None
-
-        # Subscribers
-        self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
-        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-
-        # Publisher
-        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
-
-        # Timer for control loop
-        self.create_timer(0.02, self.control_loop)
-        self.get_logger().info(f"ADP Raceline Runner initialized with vmax = {self.vmax:.2f} m/s")
-
-    def frenet_callback(self, msg):
-        self.frenet_errors = msg.data
-        self.kappa = self.frenet_errors[4] if len(msg.data) >= 5 else 0.0
-
-    def odom_callback(self, msg):
-        pass  # Not used, but we can store Vx here if needed later
-
-    def control_loop(self):
-        if self.frenet_errors is None:
-            return
-
-        e_y, dot_e_y, e_psi, dot_e_psi = self.frenet_errors[:4]
-        x = np.array([e_y, dot_e_y, e_psi, dot_e_psi])
-
-        # Steering control
-        delta = float(-np.dot(self.K, x))
-        delta = np.clip(delta, -0.4189, 0.4189)
-
-        # Curvature-based speed modulation
-        kappa_abs = abs(self.kappa)
-        speed = self.vmax * np.exp(-4.0 * kappa_abs)  # tuneable decay rate
-        speed = np.clip(speed, 0.5, self.vmax)
-
-        # Publish command
-        msg = AckermannDriveStamped()
-        msg.drive.steering_angle = delta
-        msg.drive.speed = speed
-        self.drive_pub.publish(msg)
-
-
-def main(args=None):
-    rclpy.init(args=args)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--vmax', type=float, default=5.0, help='Max speed for straight sections')
-    parsed_args, _ = parser.parse_known_args()
-
-    node = ADPRacelineRunner(vmax=parsed_args.vmax)
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        node.get_logger().info("Shutting down raceline runner.")
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
+Summary: 0 packages finished [2.30s]
+  1 package failed: adp_controller
+  1 package had stderr output: adp_controller
+Command '['/usr/bin/python3', '-c', 'import sys;from contextlib import suppress;exec("with suppress(ImportError):    from setuptools.extern.packaging.specifiers    import SpecifierSet");exec("with suppress(ImportError):    from packaging.specifiers import SpecifierSet");from distutils.core import run_setup;dist = run_setup(    \'setup.py\', script_args=(\'--dry-run\',), stop_after=\'config\');skip_keys = (\'cmdclass\', \'distclass\', \'ext_modules\', \'metadata\');data = {    key: value for key, value in dist.__dict__.items()     if (        not key.startswith(\'_\') and         not callable(value) and         key not in skip_keys and         key not in dist.display_option_names    )};data[\'metadata\'] = {    k: v for k, v in dist.metadata.__dict__.items()     if k not in (\'license_files\', \'provides_extras\')};sys.stdout.buffer.write(repr(data).encode(\'utf-8\'))']' returned non-zero exit status 1.
