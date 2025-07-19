@@ -6,7 +6,7 @@ import numpy as np
 from scipy import linalg
 import os
 
-# Vehicle parameters (example values — tune to your car)
+# Vehicle parameters
 m = 3.47      # kg
 Iz = 0.04712  # kg*m^2
 lf = 0.125    # m
@@ -25,6 +25,9 @@ kappa_grid = np.linspace(-3.0, 3.0, 25)  # 25 points in [-3, 3]
 # Output shape: (V, K, 1, 4)
 K_table = np.zeros((len(vx_grid), len(kappa_grid), 1, 4))
 
+# Discretization timestep
+T = 0.02  # seconds
+
 # Compute gain for each (Vx, kappa)
 for i, Vx in enumerate(vx_grid):
     for j, kappa in enumerate(kappa_grid):
@@ -38,9 +41,13 @@ for i, Vx in enumerate(vx_grid):
 
             B = np.array([[0], [2*Cf/m], [0], [2*Cf*lf/Iz]])
 
-            # Solve continuous Riccati equation
-            P = linalg.solve_continuous_are(A, B, Q, R)
-            K = np.linalg.inv(R) @ B.T @ P
+            # Discretize A, B using Euler method
+            A_d = np.eye(4) + A * T
+            B_d = B * T
+
+            # Solve discrete Riccati equation
+            P = linalg.solve_discrete_are(A_d, B_d, Q, R)
+            K = np.linalg.inv(R + B_d.T @ P @ B_d) @ (B_d.T @ P @ A_d)
             K_table[i, j, 0, :] = K
 
         except Exception as e:
