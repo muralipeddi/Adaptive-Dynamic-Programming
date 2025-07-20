@@ -1,88 +1,94 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/generate_adp_gain_table.py
+>>> x = np.load("K_table.npy")
+>>> print(x)
+[[[[ 0.35904233  7.93110769 -3.57232749 -1.3072112 ]]
 
-#!/usr/bin/env python3
+  [[ 0.35904233  7.93110769 -3.57232749 -1.3072112 ]]
 
-import torch
-import numpy as np
-import os
+  [[ 0.35904233  7.93110769 -3.57232749 -1.3072112 ]]
 
-# Use GPU if available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  ...
 
-# Vehicle parameters
-m = 3.47
-Iz = 0.04712
-lf = 0.125
-lr = 0.125
-Cf = 47.18
-Cr = 54.56
+  [[ 0.35904233  7.93110769 -3.57232749 -1.3072112 ]]
 
-# Cost matrices (broadcastable)
-Q_np = np.diag([5.0, 0.5, 5.0, 0.5])
-R_np = np.array([[1.0]])
-Q = torch.tensor(Q_np, dtype=torch.float32, device=device)
-R = torch.tensor(R_np, dtype=torch.float32, device=device)
+  [[ 0.35904233  7.93110769 -3.57232749 -1.3072112 ]]
 
-# Discretization
-T = 0.02
-vx_grid = np.arange(0.5, 15.1, 0.5)   # 0.5 to 15.0
-kappa_grid = np.linspace(-3.0, 3.0, 100000)
+  [[ 0.35904233  7.93110769 -3.57232749 -1.3072112 ]]]
 
-V, K = len(vx_grid), len(kappa_grid)
-K_table = torch.zeros((V, K, 4), dtype=torch.float32, device=device)
 
-# Build A, B matrices
-A_batch = []
-B_batch = []
+ [[[ 0.58027344  0.15098963  0.58390881 -0.04991886]]
 
-count = 0
-total = V * K
+  [[ 0.58027344  0.15098963  0.58390881 -0.04991886]]
 
-for i, Vx in enumerate(vx_grid):
-    for j, kappa in enumerate(kappa_grid):
-        A = np.array([
-            [0, 1, 0, 0],
-            [0, -(2*Cf + 2*Cr)/(m*Vx), (2*Cf + 2*Cr)/m, -(2*Cf*lf - 2*Cr*lr)/(m*Vx)],
-            [0, 0, 0, 1],
-            [0, -(2*Cf*lf - 2*Cr*lr)/(Iz*Vx), (2*Cf*lf - 2*Cr*lr)/Iz, -(2*Cf*lf**2 + 2*Cr*lr**2)/(Iz*Vx)]
-        ])
-        B = np.array([[0], [2*Cf/m], [0], [2*Cf*lf/Iz]])
+  [[ 0.58027344  0.15098963  0.58390881 -0.04991886]]
 
-        A_d = np.eye(4) + A * T
-        B_d = B * T
+  ...
 
-        A_batch.append(A_d)
-        B_batch.append(B_d)
+  [[ 0.58027344  0.15098963  0.58390881 -0.04991886]]
 
-        count += 1
-        if count % 100000 == 0 or count == total:
-            progress = 100.0 * count / total
-            print(f"Progress: {progress:.2f}% ({count}/{total})")
+  [[ 0.58027344  0.15098963  0.58390881 -0.04991886]]
 
-# Convert to batched tensors
-A_tensor = torch.tensor(np.stack(A_batch), dtype=torch.float32, device=device)
-B_tensor = torch.tensor(np.stack(B_batch), dtype=torch.float32, device=device)
+  [[ 0.58027344  0.15098963  0.58390881 -0.04991886]]]
 
-# Solve DARE using value iteration
-def solve_dare_batch(A, B, Q, R, num_iter=150):
-    P = Q.expand(A.shape[0], -1, -1).clone()
-    for _ in range(num_iter):
-        BT_P = torch.bmm(B.transpose(1, 2), P)
-        BT_P_B = torch.bmm(BT_P, B)
-        inv = torch.linalg.inv(R + BT_P_B)
-        K = torch.bmm(torch.bmm(inv, BT_P), A)
-        A_BK = A - torch.bmm(B, K)
-        P = Q + torch.bmm(A_BK.transpose(1, 2), torch.bmm(P, A_BK))
-    return P, K
 
-_, K_tensor = solve_dare_batch(A_tensor, B_tensor, Q, R)
-K_tensor = torch.clamp(K_tensor, -20.0, 20.0)
+ [[[ 0.57811973  0.11434449  0.67075865  0.0340566 ]]
 
-# Reshape and save
-K_table = K_tensor.squeeze(1).reshape(V, K, 4).cpu().numpy()
-save_dir = os.path.dirname(__file__)
-np.save(os.path.join(save_dir, "K_table.npy"), K_table)
-np.save(os.path.join(save_dir, "vx_grid.npy"), vx_grid)
-np.save(os.path.join(save_dir, "kappa_grid.npy"), kappa_grid)
+  [[ 0.57811973  0.11434449  0.67075865  0.0340566 ]]
 
-print(f"Saved: K_table {K_table.shape}, Vx grid {vx_grid.shape}, kappa grid {kappa_grid.shape}")
+  [[ 0.57811973  0.11434449  0.67075865  0.0340566 ]]
+
+  ...
+
+  [[ 0.57811973  0.11434449  0.67075865  0.0340566 ]]
+
+  [[ 0.57811973  0.11434449  0.67075865  0.0340566 ]]
+
+  [[ 0.57811973  0.11434449  0.67075865  0.0340566 ]]]
+
+
+ ...
+
+
+ [[[ 0.5306027   0.15176045  1.87540365  0.19320204]]
+
+  [[ 0.5306027   0.15176045  1.87540365  0.19320204]]
+
+  [[ 0.5306027   0.15176045  1.87540365  0.19320204]]
+
+  ...
+
+  [[ 0.5306027   0.15176045  1.87540365  0.19320204]]
+
+  [[ 0.5306027   0.15176045  1.87540365  0.19320204]]
+
+  [[ 0.5306027   0.15176045  1.87540365  0.19320204]]]
+
+
+ [[[ 0.52999307  0.15430062  1.89683071  0.19389285]]
+
+  [[ 0.52999307  0.15430062  1.89683071  0.19389285]]
+
+  [[ 0.52999307  0.15430062  1.89683071  0.19389285]]
+
+  ...
+
+  [[ 0.52999307  0.15430062  1.89683071  0.19389285]]
+
+  [[ 0.52999307  0.15430062  1.89683071  0.19389285]]
+
+  [[ 0.52999307  0.15430062  1.89683071  0.19389285]]]
+
+
+ [[[ 0.52941633  0.15675215  1.91721472  0.19453501]]
+
+  [[ 0.52941633  0.15675215  1.91721472  0.19453501]]
+
+  [[ 0.52941633  0.15675215  1.91721472  0.19453501]]
+
+  ...
+
+  [[ 0.52941633  0.15675215  1.91721472  0.19453501]]
+
+  [[ 0.52941633  0.15675215  1.91721472  0.19453501]]
+
+  [[ 0.52941633  0.15675215  1.91721472  0.19453501]]]]
+>>> 
