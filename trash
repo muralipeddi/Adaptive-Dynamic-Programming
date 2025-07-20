@@ -1,18 +1,64 @@
-can-02@ubuntu:~/Desktop/f1tenth_ws$ ros2 run adp_controller adp_raceline_runner --ros-args --p speed:=3.0
-Traceback (most recent call last):
-  File "/opt/ros/galactic/lib/python3.8/site-packages/rclpy/context.py", line 69, in init
-    if self.__context is not None:
-AttributeError: 'Context' object has no attribute '_Context__context'
+# ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/generate_adp_gain_table.py
 
-During handling of the above exception, another exception occurred:
+#!/usr/bin/env python3
 
-Traceback (most recent call last):
-  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller/adp_raceline_runner", line 33, in <module>
-    sys.exit(load_entry_point('adp-controller==0.0.0', 'console_scripts', 'adp_raceline_runner')())
-  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/adp_raceline_runner.py", line 78, in main
-    rclpy.init(args=args)
-  File "/opt/ros/galactic/lib/python3.8/site-packages/rclpy/__init__.py", line 76, in init
-    return context.init(args, domain_id=domain_id)
-  File "/opt/ros/galactic/lib/python3.8/site-packages/rclpy/context.py", line 72, in init
-    self.__context = _rclpy.Context(
-rclpy._rclpy_pybind11.UnknownROSArgsError: ['--p', 'speed:=3.0']
+import numpy as np
+from scipy import linalg
+import os
+
+# Vehicle parameters
+m = 3.47      # kg
+Iz = 0.04712  # kg*m^2
+lf = 0.125    # m
+lr = 0.125    # m
+Cf = 4.718e1  # N/rad
+Cr = 5.456e1  # N/rad
+
+# Cost matrices (increased weights for ey and epsi)
+Q = np.diag([10.0, 0.5, 10.0, 0.5])
+R = np.array([[2.0]])
+
+# Discretization grid
+vx_grid = np.arange(0.5, 15.1, 0.5)   # [0.5, 1.0, ..., 15.0] m/s
+kappa_grid = np.linspace(-3.0, 3.0, 50)  # 50 points in [-3, 3]
+
+# Output shape: (V, K, 1, 4)
+K_table = np.zeros((len(vx_grid), len(kappa_grid), 1, 4))
+
+# Discretization timestep
+T = 0.02  # seconds
+
+# Compute gain for each (Vx, kappa)
+for i, Vx in enumerate(vx_grid):
+    for j, kappa in enumerate(kappa_grid):
+        try:
+            A = np.array([
+                [0, 1, 0, 0],
+                [0, -(2*Cf + 2*Cr)/(m*Vx), (2*Cf + 2*Cr)/m, -(2*Cf*lf - 2*Cr*lr)/(m*Vx)],
+                [0, 0, 0, 1],
+                [0, -(2*Cf*lf - 2*Cr*lr)/(Iz*Vx), (2*Cf*lf - 2*Cr*lr)/Iz, -(2*Cf*lf**2 + 2*Cr*lr**2)/(Iz*Vx)]
+            ])
+
+            B = np.array([[0], [2*Cf/m], [0], [2*Cf*lf/Iz]])
+
+            # Discretize A, B using Euler method
+            A_d = np.eye(4) + A * T
+            B_d = B * T
+
+            # Solve discrete Riccati equation
+            P = linalg.solve_discrete_are(A_d, B_d, Q, R)
+            K = np.linalg.inv(R + B_d.T @ P @ B_d) @ (B_d.T @ P @ A_d)
+            K = np.clip(K, -20.0, 20.0)  # Clip gain values to prevent instability
+            K_table[i, j, 0, :] = K
+
+        except Exception as e:
+            print(f"[WARNING] Riccati failed at Vx={Vx:.2f}, kappa={kappa:.2f}. Using zero gain.")
+            K_table[i, j, 0, :] = 0.0
+
+# Save
+save_dir = os.path.dirname(__file__)
+np.save(os.path.join(save_dir, "K_table.npy"), K_table)
+np.save(os.path.join(save_dir, "vx_grid.npy"), vx_grid)
+np.save(os.path.join(save_dir, "kappa_grid.npy"), kappa_grid)
+
+print(f"Saved: K_table {K_table.shape}, Vx grid {vx_grid.shape}, kappa grid {kappa_grid.shape}")
