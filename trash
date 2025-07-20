@@ -1,3 +1,3 @@
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 2
-sudo update-alternatives --config python
+python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0))"
+
+python3 ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/generate_adp_gain_table.py
