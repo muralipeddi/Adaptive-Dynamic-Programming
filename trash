@@ -1,88 +1,18 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/adp_controller/adp_raceline_runner.py
+can-02@ubuntu:~/Desktop/f1tenth_ws$ ros2 run adp_controller adp_raceline_runner --ros-args --p speed:=3.0
+Traceback (most recent call last):
+  File "/opt/ros/galactic/lib/python3.8/site-packages/rclpy/context.py", line 69, in init
+    if self.__context is not None:
+AttributeError: 'Context' object has no attribute '_Context__context'
 
-#!/usr/bin/env python3
+During handling of the above exception, another exception occurred:
 
-import rclpy
-from rclpy.node import Node
-from nav_msgs.msg import Odometry
-from ackermann_msgs.msg import AckermannDriveStamped
-from std_msgs.msg import Float32MultiArray
-from ament_index_python.packages import get_package_share_directory
-
-import numpy as np
-import os
-from scipy.interpolate import RegularGridInterpolator
-
-class ADPRacelineRunner(Node):
-    def __init__(self):
-        super().__init__('adp_raceline_runner')
-
-        # Parameters
-        self.declare_parameter('speed', 1.5)
-        self.speed = self.get_parameter('speed').get_parameter_value().double_value
-
-        # Load gain table
-        utils_dir = os.path.join(
-            get_package_share_directory('adp_controller'), 'scripts', 'utils')
-        K_table = np.load(os.path.join(utils_dir, 'K_table.npy'))
-        vx_grid = np.load(os.path.join(utils_dir, 'vx_grid.npy'))
-        kappa_grid = np.load(os.path.join(utils_dir, 'kappa_grid.npy'))
-        self.K_interp = RegularGridInterpolator(
-            (vx_grid, kappa_grid), K_table[:, :, 0, :], bounds_error=False, fill_value=0.0)
-
-        # State
-        self.frenet_errors = None
-        self.vx = 0.0
-        self.kappa = 0.0
-
-        # ROS Interfaces
-        self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
-        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
-        self.timer = self.create_timer(0.02, self.control_loop)
-
-        self.get_logger().info(f"ADP Raceline Runner Initialized at speed {self.speed:.2f} m/s")
-
-    def frenet_callback(self, msg):
-        self.frenet_errors = msg.data
-        self.kappa = msg.data[4]  # extract curvature
-
-    def odom_callback(self, msg):
-        self.vx = msg.twist.twist.linear.x
-
-    def control_loop(self):
-        if self.frenet_errors is None:
-            return
-
-        e_y, dot_e_y, e_psi, dot_e_psi = self.frenet_errors[:4]
-        x = np.array([e_y, dot_e_y, e_psi, dot_e_psi])
-
-        vx_clip = np.clip(self.speed, 0.5, 15.0)
-        kappa_clip = np.clip(self.kappa, -3.0, 3.0)
-        try:
-            K = self.K_interp((vx_clip, kappa_clip))
-        except:
-            self.get_logger().warn("K interpolation failed, using zero gain")
-            K = np.zeros(4)
-
-        delta = float(-np.dot(K, x))
-        delta = np.clip(delta, -0.4189, 0.4189)
-
-        msg = AckermannDriveStamped()
-        msg.drive.steering_angle = delta
-        msg.drive.speed = self.speed
-        self.drive_pub.publish(msg)
-
-
-def main(args=None):
+Traceback (most recent call last):
+  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller/adp_raceline_runner", line 33, in <module>
+    sys.exit(load_entry_point('adp-controller==0.0.0', 'console_scripts', 'adp_raceline_runner')())
+  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/adp_raceline_runner.py", line 78, in main
     rclpy.init(args=args)
-    node = ADPRacelineRunner()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    node.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
+  File "/opt/ros/galactic/lib/python3.8/site-packages/rclpy/__init__.py", line 76, in init
+    return context.init(args, domain_id=domain_id)
+  File "/opt/ros/galactic/lib/python3.8/site-packages/rclpy/context.py", line 72, in init
+    self.__context = _rclpy.Context(
+rclpy._rclpy_pybind11.UnknownROSArgsError: ['--p', 'speed:=3.0']
