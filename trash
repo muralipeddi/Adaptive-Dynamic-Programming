@@ -1,92 +1,70 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/adp_controller/adp_raceline_runner.py
+# ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/generate_adp_gain_table.py
 
 #!/usr/bin/env python3
 
-import rclpy
-from rclpy.node import Node
-from nav_msgs.msg import Odometry
-from ackermann_msgs.msg import AckermannDriveStamped
-from std_msgs.msg import Float32MultiArray
-from ament_index_python.packages import get_package_share_directory
-
 import numpy as np
+from scipy import linalg
 import os
-from scipy.interpolate import RegularGridInterpolator
 
-class ADPRacelineRunner(Node):
-    def __init__(self):
-        super().__init__('adp_raceline_runner')
+# Vehicle parameters
+m = 3.47      # kg
+Iz = 0.04712  # kg*m^2
+lf = 0.125    # m
+lr = 0.125    # m
+Cf = 4.718e1  # N/rad
+Cr = 5.456e1  # N/rad
 
-        # Parameters
-        self.declare_parameter('speed', 1.5)
-        self.speed = self.get_parameter('speed').get_parameter_value().double_value
+# Cost matrices
+Q = np.diag([5.0, 0.5, 5.0, 0.5])
+R = np.array([[1.0]])
 
-        # Load gain table
-        utils_dir = os.path.join(
-            get_package_share_directory('adp_controller'), 'scripts', 'utils')
-        K_table = np.load(os.path.join(utils_dir, 'K_table.npy'))
-        vx_grid = np.load(os.path.join(utils_dir, 'vx_grid.npy'))
-        kappa_grid = np.load(os.path.join(utils_dir, 'kappa_grid.npy'))
-        self.K_interp = RegularGridInterpolator(
-            (vx_grid, kappa_grid), K_table[:, :, 0, :], bounds_error=False, fill_value=0.0)
+# Discretization grid
+vx_grid = np.arange(0.5, 15.1, 0.5)   # [0.5, 1.0, ..., 15.0] m/s
+kappa_grid = np.linspace(-3.0, 3.0, 100000)  # 100000 points in [-3, 3]
 
-        # State
-        self.frenet_errors = None
-        self.vx = 0.0
-        self.kappa = 0.0
+# Output shape: (V, K, 1, 4)
+K_table = np.zeros((len(vx_grid), len(kappa_grid), 1, 4))
 
-        # ROS Interfaces
-        self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
-        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
-        self.timer = self.create_timer(0.02, self.control_loop)
+# Discretization timestep
+T = 0.02  # seconds
 
-        self.get_logger().info(f"ADP Raceline Runner Initialized at speed {self.speed:.2f} m/s")
-
-    def frenet_callback(self, msg):
-        self.frenet_errors = msg.data
-        self.kappa = msg.data[4]  # extract curvature
-
-    def odom_callback(self, msg):
-        self.vx = msg.twist.twist.linear.x
-
-    def control_loop(self):
-        if self.frenet_errors is None:
-            return
-
-        e_y, dot_e_y, e_psi, dot_e_psi = self.frenet_errors[:4]
-        x = np.array([e_y, dot_e_y, e_psi, dot_e_psi])
-
-        vx_clip = np.clip(self.speed, 0.5, 15.0)
-        kappa_clip = np.clip(self.kappa, -3.0, 3.0)
+# Compute gain for each (Vx, kappa)
+total = len(vx_grid) * len(kappa_grid)
+count = 0
+for i, Vx in enumerate(vx_grid):
+    for j, kappa in enumerate(kappa_grid):
         try:
-            K = self.K_interp((vx_clip, kappa_clip))
+            A = np.array([
+                [0, 1, 0, 0],
+                [0, -(2*Cf + 2*Cr)/(m*Vx), (2*Cf + 2*Cr)/m, -(2*Cf*lf - 2*Cr*lr)/(m*Vx)],
+                [0, 0, 0, 1],
+                [0, -(2*Cf*lf - 2*Cr*lr)/(Iz*Vx), (2*Cf*lf - 2*Cr*lr)/Iz, -(2*Cf*lf**2 + 2*Cr*lr**2)/(Iz*Vx)]
+            ])
+
+            B = np.array([[0], [2*Cf/m], [0], [2*Cf*lf/Iz]])
+
+            # Discretize A, B using Euler method
+            A_d = np.eye(4) + A * T
+            B_d = B * T
+
+            # Solve discrete Riccati equation
+            P = linalg.solve_discrete_are(A_d, B_d, Q, R)
+            K = np.linalg.inv(R + B_d.T @ P @ B_d) @ (B_d.T @ P @ A_d)
             K = np.clip(K, -20.0, 20.0)
-        except:
-            self.get_logger().warn("K interpolation failed, using zero gain")
-            K = np.zeros(4)
+            K_table[i, j, 0, :] = K
 
-        delta = float(-np.dot(K, x))
-        delta = np.clip(delta, -0.4189, 0.4189)
+        except Exception as e:
+            K_table[i, j, 0, :] = 0.0
 
-        # Log gains and control
-        self.get_logger().info(f"Vx: {vx_clip:.2f}, kappa: {kappa_clip:.2f}, K: {K}, x: {x}, delta: {delta:.3f}")
+        count += 1
+        if count % 10000 == 0 or count == total:
+            progress = 100.0 * count / total
+            print(f"Progress: {progress:.2f}% ({count}/{total})")
 
-        msg = AckermannDriveStamped()
-        msg.drive.steering_angle = delta
-        msg.drive.speed = self.speed
-        self.drive_pub.publish(msg)
+# Save
+save_dir = os.path.dirname(__file__)
+np.save(os.path.join(save_dir, "K_table.npy"), K_table)
+np.save(os.path.join(save_dir, "vx_grid.npy"), vx_grid)
+np.save(os.path.join(save_dir, "kappa_grid.npy"), kappa_grid)
 
-
-def main(args=None):
-    rclpy.init(args=args)
-    node = ADPRacelineRunner()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    node.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
+print(f"Saved: K_table {K_table.shape}, Vx grid {vx_grid.shape}, kappa grid {kappa_grid.shape}")
