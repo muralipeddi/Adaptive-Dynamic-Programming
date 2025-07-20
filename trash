@@ -1,11 +1,3 @@
-can-02@ubuntu:~$ sudo apt install python3.10 python3.10-venv python3.10-dev
-[sudo] password for can-02: 
-Reading package lists... Done
-Building dependency tree       
-Reading state information... Done
-E: Unable to locate package python3.10
-E: Couldn't find any package by glob 'python3.10'
-E: Unable to locate package python3.10-venv
-E: Couldn't find any package by glob 'python3.10-venv'
-E: Unable to locate package python3.10-dev
-E: Couldn't find any package by glob 'python3.10-dev'
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 2
+sudo update-alternatives --config python
