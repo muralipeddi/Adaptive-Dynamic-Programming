@@ -2,66 +2,84 @@
 
 #!/usr/bin/env python3
 
+import torch
 import numpy as np
-from scipy import linalg
 import os
 
+# Use GPU if available
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 # Vehicle parameters
-m = 3.47      # kg
-Iz = 0.04712  # kg*m^2
-lf = 0.125    # m
-lr = 0.125    # m
-Cf = 4.718e1  # N/rad
-Cr = 5.456e1  # N/rad
+m = 3.47
+Iz = 0.04712
+lf = 0.125
+lr = 0.125
+Cf = 47.18
+Cr = 54.56
 
-# Cost matrices
-Q = np.diag([5.0, 0.5, 5.0, 0.5])
-R = np.array([[1.0]])
+# Cost matrices (broadcastable)
+Q_np = np.diag([5.0, 0.5, 5.0, 0.5])
+R_np = np.array([[1.0]])
+Q = torch.tensor(Q_np, dtype=torch.float32, device=device)
+R = torch.tensor(R_np, dtype=torch.float32, device=device)
 
-# Discretization grid
-vx_grid = np.arange(0.5, 15.1, 0.5)   # [0.5, 1.0, ..., 15.0] m/s
-kappa_grid = np.linspace(-3.0, 3.0, 100000)  # 100000 points in [-3, 3]
+# Discretization
+T = 0.02
+vx_grid = np.arange(0.5, 15.1, 0.5)   # 0.5 to 15.0
+kappa_grid = np.linspace(-3.0, 3.0, 100000)
 
-# Output shape: (V, K, 1, 4)
-K_table = np.zeros((len(vx_grid), len(kappa_grid), 1, 4))
+V, K = len(vx_grid), len(kappa_grid)
+K_table = torch.zeros((V, K, 4), dtype=torch.float32, device=device)
 
-# Discretization timestep
-T = 0.02  # seconds
+# Build A, B matrices
+A_batch = []
+B_batch = []
 
-# Compute gain for each (Vx, kappa)
-total = len(vx_grid) * len(kappa_grid)
 count = 0
+total = V * K
+
 for i, Vx in enumerate(vx_grid):
     for j, kappa in enumerate(kappa_grid):
-        try:
-            A = np.array([
-                [0, 1, 0, 0],
-                [0, -(2*Cf + 2*Cr)/(m*Vx), (2*Cf + 2*Cr)/m, -(2*Cf*lf - 2*Cr*lr)/(m*Vx)],
-                [0, 0, 0, 1],
-                [0, -(2*Cf*lf - 2*Cr*lr)/(Iz*Vx), (2*Cf*lf - 2*Cr*lr)/Iz, -(2*Cf*lf**2 + 2*Cr*lr**2)/(Iz*Vx)]
-            ])
+        A = np.array([
+            [0, 1, 0, 0],
+            [0, -(2*Cf + 2*Cr)/(m*Vx), (2*Cf + 2*Cr)/m, -(2*Cf*lf - 2*Cr*lr)/(m*Vx)],
+            [0, 0, 0, 1],
+            [0, -(2*Cf*lf - 2*Cr*lr)/(Iz*Vx), (2*Cf*lf - 2*Cr*lr)/Iz, -(2*Cf*lf**2 + 2*Cr*lr**2)/(Iz*Vx)]
+        ])
+        B = np.array([[0], [2*Cf/m], [0], [2*Cf*lf/Iz]])
 
-            B = np.array([[0], [2*Cf/m], [0], [2*Cf*lf/Iz]])
+        A_d = np.eye(4) + A * T
+        B_d = B * T
 
-            # Discretize A, B using Euler method
-            A_d = np.eye(4) + A * T
-            B_d = B * T
-
-            # Solve discrete Riccati equation
-            P = linalg.solve_discrete_are(A_d, B_d, Q, R)
-            K = np.linalg.inv(R + B_d.T @ P @ B_d) @ (B_d.T @ P @ A_d)
-            K = np.clip(K, -20.0, 20.0)
-            K_table[i, j, 0, :] = K
-
-        except Exception as e:
-            K_table[i, j, 0, :] = 0.0
+        A_batch.append(A_d)
+        B_batch.append(B_d)
 
         count += 1
-        if count % 10000 == 0 or count == total:
+        if count % 100000 == 0 or count == total:
             progress = 100.0 * count / total
             print(f"Progress: {progress:.2f}% ({count}/{total})")
 
-# Save
+# Convert to batched tensors
+A_tensor = torch.tensor(np.stack(A_batch), dtype=torch.float32, device=device)
+B_tensor = torch.tensor(np.stack(B_batch), dtype=torch.float32, device=device)
+
+# Solve DARE using value iteration
+def solve_dare_batch(A, B, Q, R, num_iter=150):
+    P = Q.expand(A.shape[0], -1, -1).clone()
+    for _ in range(num_iter):
+        BT_P = torch.bmm(B.transpose(1, 2), P)
+        BT_P_B = torch.bmm(BT_P, B)
+        inv = torch.linalg.inv(R + BT_P_B)
+        K = torch.bmm(torch.bmm(inv, BT_P), A)
+        A_BK = A - torch.bmm(B, K)
+        P = Q + torch.bmm(A_BK.transpose(1, 2), torch.bmm(P, A_BK))
+    return P, K
+
+_, K_tensor = solve_dare_batch(A_tensor, B_tensor, Q, R)
+K_tensor = torch.clamp(K_tensor, -20.0, 20.0)
+
+# Reshape and save
+K_table = K_tensor.squeeze(1).reshape(V, K, 4).cpu().numpy()
 save_dir = os.path.dirname(__file__)
 np.save(os.path.join(save_dir, "K_table.npy"), K_table)
 np.save(os.path.join(save_dir, "vx_grid.npy"), vx_grid)
