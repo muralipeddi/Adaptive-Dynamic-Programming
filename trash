@@ -1,90 +1,28 @@
-#!/usr/bin/env python3
+=== Fourier Series Coefficients ===
 
-import numpy as np
-import matplotlib.pyplot as plt
+x(t)     = a0: 23.191625
+          a_n: [ 6.473812  0.024802  0.462183 -0.03482 ]
+          b_n: [-1.658801 -0.144493 -0.20779  -0.098587]
 
-# === Load raceline === #
-raceline_path = "/home/can-02/Desktop/f1tenth_ws/src/adp_controller/waypoints/optimal_raceline.csv"
-data = np.loadtxt(raceline_path, delimiter=",", skiprows=1)
-x = data[:, 0]
-y = data[:, 1]
-kappa = data[:, 3]
-N = len(x)
+y(t)     = a0: -10.609542
+          a_n: [ 0.336582  0.09336  -0.537339  0.005938]
+          b_n: [-6.03896   0.049751  0.492916 -0.025279]
 
-# === Sampling time from spline resolution and nominal speed === #
-dt = 0.333  # seconds
-T = N * dt
-t_arr = np.arange(N) * dt
-
-# === Compute Fourier Coefficients === #
-def compute_fourier_coeffs(signal, T):
-    N = len(signal)
-    a0 = np.sum(signal) / N
-    a = []
-    b = []
-    for n in range(1, N // 2):
-        omega = 2 * np.pi * n / T
-        cos_n = np.cos(omega * t_arr)
-        sin_n = np.sin(omega * t_arr)
-        a_n = 2 / N * np.dot(signal, cos_n)
-        b_n = 2 / N * np.dot(signal, sin_n)
-        a.append(a_n)
-        b.append(b_n)
-    return a0, np.array(a), np.array(b)
-
-# === Reconstruct signal === #
-def reconstruct(a0, a, b, T, t):
-    result = np.ones_like(t) * a0
-    for n in range(1, len(a) + 1):
-        omega = 2 * np.pi * n / T
-        result += a[n - 1] * np.cos(omega * t) + b[n - 1] * np.sin(omega * t)
-    return result
-
-# === Compute and Reconstruct === #
-a0_x, a_x, b_x = compute_fourier_coeffs(x, T)
-a0_y, a_y, b_y = compute_fourier_coeffs(y, T)
-a0_k, a_k, b_k = compute_fourier_coeffs(kappa, T)
-
-x_recon = reconstruct(a0_x, a_x, b_x, T, t_arr)
-y_recon = reconstruct(a0_y, a_y, b_y, T, t_arr)
-k_recon = reconstruct(a0_k, a_k, b_k, T, t_arr)
-
-# === Print Coefficients (Grouped Form) === #
-print("\n=== Fourier Series Coefficients ===")
-print(f"\nx(t)     = a0: {a0_x:.6f}")
-print(f"          a_n: {np.round(a_x, 6)}")
-print(f"          b_n: {np.round(b_x, 6)}")
-
-print(f"\ny(t)     = a0: {a0_y:.6f}")
-print(f"          a_n: {np.round(a_y, 6)}")
-print(f"          b_n: {np.round(b_y, 6)}")
-
-print(f"\nkappa(t) = a0: {a0_k:.6f}")
-print(f"          a_n: {np.round(a_k, 6)}")
-print(f"          b_n: {np.round(b_k, 6)}")
-
-# === Plot Results === #
-fig, axs = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
-
-axs[0].plot(t_arr, x, 'r-', label='x original')
-axs[0].plot(t_arr, x_recon, 'b--', label='x reconstructed')
-axs[0].set_ylabel("x(t)")
-axs[0].legend()
-axs[0].grid(True)
-
-axs[1].plot(t_arr, y, 'r-', label='y original')
-axs[1].plot(t_arr, y_recon, 'b--', label='y reconstructed')
-axs[1].set_ylabel("y(t)")
-axs[1].legend()
-axs[1].grid(True)
-
-axs[2].plot(t_arr, kappa, 'r-', label='kappa original')
-axs[2].plot(t_arr, k_recon, 'b--', label='kappa reconstructed')
-axs[2].set_ylabel("κ(t)")
-axs[2].set_xlabel("time [s]")
-axs[2].legend()
-axs[2].grid(True)
-
-plt.tight_layout()
-plt.suptitle("Fourier Reconstruction of Raceline Variables", fontsize=14, y=1.02)
-plt.show()
+kappa(t) = a0: -0.145237
+          a_n: [-2.31200e-03 -1.06830e-02 -5.35200e-03 -2.00890e-01  3.31290e-02
+ -6.71290e-02  4.08710e-02 -3.36090e-02  5.43380e-02 -1.02647e-01
+  7.89890e-02  5.00560e-02  5.32010e-02 -8.04160e-02  5.77340e-02
+  3.01500e-02  4.14600e-02 -3.96920e-02  8.11900e-03 -3.79100e-03
+  1.66340e-02 -1.49940e-02 -1.72030e-02 -5.17900e-03 -1.81850e-02
+ -1.30000e-05 -2.22250e-02  9.87800e-03 -4.49800e-02  1.13950e-02
+ -2.80230e-02  3.05340e-02 -5.82230e-02  1.86630e-02 -2.84830e-02
+  4.71160e-02 -6.14030e-02  2.81020e-02 -2.70200e-02  4.44300e-02
+ -5.15310e-02  3.23250e-02 -2.89610e-02  3.26520e-02 -3.55200e-02
+  2.61000e-02 -2.43570e-02  2.00480e-02 -2.27600e-02]
+          b_n: [ 0.002947  0.097593  0.029081 -0.046989  0.043712  0.20112   0.02049
+ -0.028105  0.033044  0.147866 -0.005056  0.028463 -0.022648  0.048778
+ -0.027181  0.05842  -0.055902  0.010429 -0.047412  0.054339 -0.042732
+  0.021091 -0.058427  0.04456  -0.02227   0.032599 -0.050358  0.036716
+ -0.01503   0.035792 -0.03373   0.03057  -0.010039  0.028772 -0.019656
+  0.030185 -0.012302  0.011736 -0.008481  0.026491 -0.019949  0.002499
+ -0.005523  0.019095 -0.019992  0.001136 -0.00969   0.016151 -0.018009]
