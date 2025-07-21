@@ -1,46 +1,52 @@
+#!/usr/bin/env python3
+
 import numpy as np
 
 # === Load Raceline === #
-data = np.loadtxt(
-    "/home/can-02/Desktop/f1tenth_ws/src/adp_controller/waypoints/optimal_raceline.csv",
-    delimiter=",", skiprows=1
-)
+raceline_path = "/home/can-02/Desktop/f1tenth_ws/src/adp_controller/waypoints/optimal_raceline.csv"
+data = np.loadtxt(raceline_path, delimiter=",", skiprows=1)
 
 x = data[:, 0]
 y = data[:, 1]
 kappa = data[:, 3]
 N = len(x)
-T = N  # assume 1 sample per unit time
 
-# === Fourier Series Coefficient Calculator === #
-def real_fourier_series(signal, T):
+# === Timing === #
+dt = 0.1
+T = N * dt
+t_arr = np.arange(N) * dt
+
+# === Fourier series calculator === #
+def compute_fourier_coeffs(signal, T):
     N = len(signal)
     a0 = np.sum(signal) / N
     a = []
     b = []
-    for k in range(1, N//2):
-        omega_k = 2 * np.pi * k / T
-        cos_term = np.cos(omega_k * np.arange(N))
-        sin_term = np.sin(omega_k * np.arange(N))
-        a_k = 2/N * np.dot(signal, cos_term)
-        b_k = 2/N * np.dot(signal, sin_term)
-        a.append(a_k)
-        b.append(b_k)
+    for n in range(1, N // 2):
+        omega = 2 * np.pi * n / T
+        cos_n = np.cos(omega * t_arr)
+        sin_n = np.sin(omega * t_arr)
+        a_n = 2 / N * np.dot(signal, cos_n)
+        b_n = 2 / N * np.dot(signal, sin_n)
+        a.append(a_n)
+        b.append(b_n)
     return a0, np.array(a), np.array(b)
 
-# === Compute Fourier Coefficients === #
-a0_x, a_x, b_x = real_fourier_series(x, T)
-a0_y, a_y, b_y = real_fourier_series(y, T)
-a0_k, a_k, b_k = real_fourier_series(kappa, T)
+# === Compute Coefficients === #
+a0_x, a_x, b_x = compute_fourier_coeffs(x, T)
+a0_y, a_y, b_y = compute_fourier_coeffs(y, T)
+a0_k, a_k, b_k = compute_fourier_coeffs(kappa, T)
 
-# === Print the Series === #
-def print_series(name, a0, a, b):
-    print(f"\n{name}(t) ≈ {a0:.4f}", end='')
-    for k in range(1, len(a)+1):
-        print(f" + ({a[k-1]:.4f})*cos({2*np.pi*k/T:.4f}*t)", end='')
-        print(f" + ({b[k-1]:.4f})*sin({2*np.pi*k/T:.4f}*t)", end='')
-    print()
+# === Print in grouped form === #
+print("\n=== Fourier Series Coefficients ===")
+print(f"\nx(t)     = a0: {a0_x:.6f}")
+print(f"          a_n: {np.round(a_x, 6)}")
+print(f"          b_n: {np.round(b_x, 6)}")
 
-print_series("x", a0_x, a_x, b_x)
-print_series("y", a0_y, a_y, b_y)
-print_series("kappa", a0_k, a_k, b_k)
+print(f"\ny(t)     = a0: {a0_y:.6f}")
+print(f"          a_n: {np.round(a_y, 6)}")
+print(f"          b_n: {np.round(b_y, 6)}")
+
+print(f"\nkappa(t) = a0: {a0_k:.6f}")
+print(f"          a_n: {np.round(a_k, 6)}")
+print(f"          b_n: {np.round(b_k, 6)}")
