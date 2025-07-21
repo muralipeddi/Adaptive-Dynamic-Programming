@@ -1,85 +1,46 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/scripts/utils/adp_raceline_runner.py
-
-#!/usr/bin/env python3
-
-import rclpy
-from rclpy.node import Node
-from std_msgs.msg import Float32MultiArray
-from nav_msgs.msg import Odometry
-from ackermann_msgs.msg import AckermannDriveStamped
-
 import numpy as np
-import os
-from scipy.interpolate import RegularGridInterpolator
-from ament_index_python.packages import get_package_share_directory
 
-class ADPRacelineRunner(Node):
-    def __init__(self):
-        super().__init__('adp_raceline_runner')
+# === Load Raceline === #
+data = np.loadtxt(
+    "/home/can-02/Desktop/f1tenth_ws/src/adp_controller/waypoints/optimal_raceline.csv",
+    delimiter=",", skiprows=1
+)
 
-        # === Load gain table === #
-        utils_dir = os.path.join(
-            get_package_share_directory('adp_controller'), 'scripts', 'utils'
-        )
+x = data[:, 0]
+y = data[:, 1]
+kappa = data[:, 3]
+N = len(x)
+T = N  # assume 1 sample per unit time
 
-        self.K_table = np.load(os.path.join(utils_dir, "K_table.npy"))  # shape: (V, K, 1, 4)
-        self.vx_grid = np.load(os.path.join(utils_dir, "vx_grid.npy"))
-        self.kappa_grid = np.load(os.path.join(utils_dir, "kappa_grid.npy"))
+# === Fourier Series Coefficient Calculator === #
+def real_fourier_series(signal, T):
+    N = len(signal)
+    a0 = np.sum(signal) / N
+    a = []
+    b = []
+    for k in range(1, N//2):
+        omega_k = 2 * np.pi * k / T
+        cos_term = np.cos(omega_k * np.arange(N))
+        sin_term = np.sin(omega_k * np.arange(N))
+        a_k = 2/N * np.dot(signal, cos_term)
+        b_k = 2/N * np.dot(signal, sin_term)
+        a.append(a_k)
+        b.append(b_k)
+    return a0, np.array(a), np.array(b)
 
-        self.K_interp = RegularGridInterpolator(
-            (self.vx_grid, self.kappa_grid),
-            self.K_table[:, :, 0, :],
-            bounds_error=False,
-            fill_value=0.0
-        )
+# === Compute Fourier Coefficients === #
+a0_x, a_x, b_x = real_fourier_series(x, T)
+a0_y, a_y, b_y = real_fourier_series(y, T)
+a0_k, a_k, b_k = real_fourier_series(kappa, T)
 
-        # === ROS 2 Interfaces === #
-        self.frenet_errors = None
-        self.vx = 0.0
+# === Print the Series === #
+def print_series(name, a0, a, b):
+    print(f"\n{name}(t) ≈ {a0:.4f}", end='')
+    for k in range(1, len(a)+1):
+        print(f" + ({a[k-1]:.4f})*cos({2*np.pi*k/T:.4f}*t)", end='')
+        print(f" + ({b[k-1]:.4f})*sin({2*np.pi*k/T:.4f}*t)", end='')
+    print()
 
-        self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
-        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
-        self.create_timer(0.02, self.control_loop)  # 50 Hz
-
-        self.get_logger().info("ADP Raceline Runner Initialized")
-
-    def frenet_callback(self, msg):
-        self.frenet_errors = msg.data
-
-    def odom_callback(self, msg):
-        self.vx = msg.twist.twist.linear.x
-
-    def control_loop(self):
-        if self.frenet_errors is None:
-            return
-
-        e_y, dot_e_y, e_psi, dot_e_psi, kappa = self.frenet_errors
-        x = np.array([e_y, dot_e_y, e_psi, dot_e_psi])
-        vx = np.clip(self.vx, 0.5, 15.0)
-        kappa = np.clip(kappa, -3.0, 3.0)
-
-        try:
-            K_row = self.K_interp((vx, kappa))
-        except:
-            self.get_logger().warn("Interpolation failed, using zero gain.")
-            K_row = np.zeros(4)
-
-        delta = float(-np.dot(K_row, x))
-        delta = np.clip(delta, -0.4189, 0.4189)
-
-        msg = AckermannDriveStamped()
-        msg.drive.steering_angle = delta
-        msg.drive.speed = vx  # or set constant speed if desired
-        self.drive_pub.publish(msg)
-
-        # Print control matrices
-        self.get_logger().info(f"K(Vx={vx:.2f}, kappa={kappa:.2f}) = {K_row}")
-        self.get_logger().info(f"x = {x}, delta = {delta:.3f}")
-
-def main(args=None):
-    rclpy.init(args=args)
-    node = ADPRacelineRunner()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+print_series("x", a0_x, a_x, b_x)
+print_series("y", a0_y, a_y, b_y)
+print_series("kappa", a0_k, a_k, b_k)
