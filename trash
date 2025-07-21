@@ -73,7 +73,9 @@ class ADPRacelineRunner(Node):
         msg.drive.speed = vx  # or set constant speed if desired
         self.drive_pub.publish(msg)
 
-        self.get_logger().debug(f"Published delta: {delta:.3f} at speed: {vx:.2f}, kappa: {kappa:.3f}")
+        # Print control matrices
+        self.get_logger().info(f"K(Vx={vx:.2f}, kappa={kappa:.2f}) = {K_row}")
+        self.get_logger().info(f"x = {x}, delta = {delta:.3f}")
 
 def main(args=None):
     rclpy.init(args=args)
