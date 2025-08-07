@@ -1,26 +1,78 @@
-=== Fourier Series Coefficients ===
+# ~/Desktop/f1tenth_ws/src/adp_controller/adp_controller/output_regulation_controller.py
 
-x(t)     = a0: 23.191625
-          a_n: [ 6.473812  0.024802  0.462183 -0.03482 ]
-          b_n: [-1.658801 -0.144493 -0.20779  -0.098587]
+#!/usr/bin/env python3
 
-y(t)     = a0: -10.609542
-          a_n: [ 0.336582  0.09336  -0.537339  0.005938]
-          b_n: [-6.03896   0.049751  0.492916 -0.025279]
+import numpy as np
+import rclpy
+from rclpy.node import Node
+from nav_msgs.msg import Odometry
+from ackermann_msgs.msg import AckermannDriveStamped
+from ament_index_python.packages import get_package_share_directory
+import os
 
-kappa(t) = a0: -0.145237
-          a_n: [-0.002312 -0.010683 -0.005352 -0.20089   0.033129 -0.067129  0.040871
- -0.033609  0.054338 -0.102647  0.078989  0.050056  0.053201 -0.080416
-  0.057734  0.03015   0.04146  -0.039692  0.008119]
-          b_n: [ 0.002947  0.097593  0.029081 -0.046989  0.043712  0.20112   0.02049
- -0.028105  0.033044  0.147866 -0.005056  0.028463 -0.022648  0.048778
- -0.027181  0.05842  -0.055902  0.010429 -0.047412]
+class OutputRegulationController(Node):
+    def __init__(self):
+        super().__init__('output_regulation_control')
 
+        # === Load Precomputed Matrices === #
+        utils_dir = os.path.join(
+            get_package_share_directory('adp_controller'), 'scripts', 'utils')
 
-# Vehicle parameters
-m = 3.47      # kg
-Iz = 0.04712  # kg*m^2
-lf = 0.125    # m
-lr = 0.125    # m
-Cf = 4.718e1  # N/rad
-Cr = 5.456e1  # N/rad
+        self.K = np.load(os.path.join(utils_dir, "K_star.npy"))  # shape (1,4)
+        self.L = np.load(os.path.join(utils_dir, "L_star.npy"))  # shape (1,qm)
+        self.E = np.load(os.path.join(utils_dir, "E_d.npy"))     # shape (qm,qm)
+
+        self.kappa_coeffs = np.load(os.path.join(utils_dir, "kappa_coeffs.npy"))  # shape (qm,)
+
+        self.dT = 0.333
+        self.vx = 1.5  # fixed speed
+
+        self.w = np.zeros((self.E.shape[0],))
+        self.w[0] = 1.0  # initial exostate (cosine offset basis)
+
+        self.state = np.zeros(4)
+
+        # === ROS interfaces === #
+        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
+        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
+        self.create_timer(self.dT, self.control_loop)
+
+        self.get_logger().info("[Output Regulation Controller] Initialized")
+
+    def odom_callback(self, msg):
+        # Get pose and velocity info
+        x = msg.pose.pose.position.x
+        y = msg.pose.pose.position.y
+
+        q = msg.pose.pose.orientation
+        siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
+        cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
+        psi = np.arctan2(siny_cosp, cosy_cosp)
+
+        vx = msg.twist.twist.linear.x
+        vy = msg.twist.twist.linear.y
+        wz = msg.twist.twist.angular.z
+
+        self.state = np.array([y, vy, psi, wz])  # placeholder: should be Frenet errors
+
+    def control_loop(self):
+        # Update exosystem state
+        self.w = self.E @ self.w
+
+        # Control law: u = -Kx + Lw
+        u = float(-self.K @ self.state + self.L @ self.w)
+        u = np.clip(u, -0.4189, 0.4189)
+
+        msg = AckermannDriveStamped()
+        msg.drive.steering_angle = u
+        msg.drive.speed = self.vx
+        self.drive_pub.publish(msg)
+
+        self.get_logger().info(f"u = {u:.4f}, kappa(t) = {(self.kappa_coeffs @ self.w):.4f}")
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = OutputRegulationController()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
