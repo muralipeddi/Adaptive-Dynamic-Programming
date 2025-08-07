@@ -1,15 +1,65 @@
-can-02@ubuntu:~/Desktop/f1tenth_ws$ ros2 run adp_controller output_regulation_control
-Traceback (most recent call last):
-  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller/output_regulation_control", line 33, in <module>
-    sys.exit(load_entry_point('adp-controller==0.0.0', 'console_scripts', 'output_regulation_control')())
-  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/output_regulation_controller.py", line 74, in main
-    node = ADPRacelineController()
-  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/output_regulation_controller.py", line 25, in __init__
-    self.K_interp = RegularGridInterpolator(
-  File "/home/can-02/.local/lib/python3.8/site-packages/scipy/interpolate/_rgi.py", line 242, in __init__
-    self._check_dimensionality(self.grid, self.values)
-  File "/home/can-02/.local/lib/python3.8/site-packages/scipy/interpolate/_rgi.py", line 248, in _check_dimensionality
-    _check_dimensionality(grid, values)
-  File "/home/can-02/.local/lib/python3.8/site-packages/scipy/interpolate/_rgi.py", line 45, in _check_dimensionality
-    raise ValueError("There are %d points and %d values in "
-ValueError: There are 30 points and 5 values in dimension 0
+# ~/Desktop/f1tenth_ws/src/adp_controller/adp_controller/output_regulation_controller.py
+
+#!/usr/bin/env python3
+
+import rclpy
+from rclpy.node import Node
+import numpy as np
+import os
+from std_msgs.msg import Float32MultiArray
+from nav_msgs.msg import Odometry
+from ackermann_msgs.msg import AckermannDriveStamped
+from ament_index_python.packages import get_package_share_directory
+
+
+class OutputRegulationController(Node):
+    def __init__(self):
+        super().__init__('output_regulation_control')
+
+        # === Load parameters === #
+        utils_dir = os.path.join(get_package_share_directory('adp_controller'), 'scripts', 'utils')
+        self.K = np.load(os.path.join(utils_dir, "K_star.npy"))            # shape: (1, 4)
+        self.L = np.load(os.path.join(utils_dir, "L_star.npy"))            # shape: (1, qm)
+        self.E_d = np.load(os.path.join(utils_dir, "E_d.npy"))            # shape: (qm, qm)
+        self.kappa_coeffs = np.load(os.path.join(utils_dir, "kappa_coeffs.npy"))  # shape: (qm,)
+
+        # === Initialize state === #
+        self.w = np.zeros((len(self.kappa_coeffs),))  # exosystem state
+        self.w[0] = 1.0
+        self.frenet_errors = None
+
+        # === ROS Interfaces === #
+        self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
+        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
+        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
+        self.create_timer(0.02, self.control_loop)  # 50 Hz
+
+        self.get_logger().info("Output Regulation Controller Initialized")
+
+    def frenet_callback(self, msg):
+        self.frenet_errors = msg.data
+
+    def odom_callback(self, msg):
+        # Update exosystem
+        self.w = self.E_d @ self.w
+
+    def control_loop(self):
+        if self.frenet_errors is None:
+            return
+
+        e_y, dot_e_y, e_psi, dot_e_psi, _ = self.frenet_errors
+        x = np.array([e_y, dot_e_y, e_psi, dot_e_psi])
+        u = float(-np.dot(self.K, x) + np.dot(self.L, self.w))
+
+        msg = AckermannDriveStamped()
+        msg.drive.steering_angle = np.clip(u, -0.4189, 0.4189)
+        msg.drive.speed = 1.5
+        self.drive_pub.publish(msg)
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = OutputRegulationController()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
