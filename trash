@@ -1,78 +1,15 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/adp_controller/output_regulation_controller.py
-
-#!/usr/bin/env python3
-
-import numpy as np
-import rclpy
-from rclpy.node import Node
-from nav_msgs.msg import Odometry
-from ackermann_msgs.msg import AckermannDriveStamped
-from ament_index_python.packages import get_package_share_directory
-import os
-
-class OutputRegulationController(Node):
-    def __init__(self):
-        super().__init__('output_regulation_control')
-
-        # === Load Precomputed Matrices === #
-        utils_dir = os.path.join(
-            get_package_share_directory('adp_controller'), 'scripts', 'utils')
-
-        self.K = np.load(os.path.join(utils_dir, "K_star.npy"))  # shape (1,4)
-        self.L = np.load(os.path.join(utils_dir, "L_star.npy"))  # shape (1,qm)
-        self.E = np.load(os.path.join(utils_dir, "E_d.npy"))     # shape (qm,qm)
-
-        self.kappa_coeffs = np.load(os.path.join(utils_dir, "kappa_coeffs.npy"))  # shape (qm,)
-
-        self.dT = 0.333
-        self.vx = 1.5  # fixed speed
-
-        self.w = np.zeros((self.E.shape[0],))
-        self.w[0] = 1.0  # initial exostate (cosine offset basis)
-
-        self.state = np.zeros(4)
-
-        # === ROS interfaces === #
-        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
-        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
-        self.create_timer(self.dT, self.control_loop)
-
-        self.get_logger().info("[Output Regulation Controller] Initialized")
-
-    def odom_callback(self, msg):
-        # Get pose and velocity info
-        x = msg.pose.pose.position.x
-        y = msg.pose.pose.position.y
-
-        q = msg.pose.pose.orientation
-        siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
-        cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
-        psi = np.arctan2(siny_cosp, cosy_cosp)
-
-        vx = msg.twist.twist.linear.x
-        vy = msg.twist.twist.linear.y
-        wz = msg.twist.twist.angular.z
-
-        self.state = np.array([y, vy, psi, wz])  # placeholder: should be Frenet errors
-
-    def control_loop(self):
-        # Update exosystem state
-        self.w = self.E @ self.w
-
-        # Control law: u = -Kx + Lw
-        u = float(-self.K @ self.state + self.L @ self.w)
-        u = np.clip(u, -0.4189, 0.4189)
-
-        msg = AckermannDriveStamped()
-        msg.drive.steering_angle = u
-        msg.drive.speed = self.vx
-        self.drive_pub.publish(msg)
-
-        self.get_logger().info(f"u = {u:.4f}, kappa(t) = {(self.kappa_coeffs @ self.w):.4f}")
-
-def main(args=None):
-    rclpy.init(args=args)
-    node = OutputRegulationController()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+can-02@ubuntu:~/Desktop/f1tenth_ws$ ros2 run adp_controller output_regulation_control
+Traceback (most recent call last):
+  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/adp_controller/output_regulation_control", line 33, in <module>
+    sys.exit(load_entry_point('adp-controller==0.0.0', 'console_scripts', 'output_regulation_control')())
+  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/output_regulation_controller.py", line 74, in main
+    node = ADPRacelineController()
+  File "/home/can-02/Desktop/f1tenth_ws/install/adp_controller/lib/python3.8/site-packages/adp_controller/output_regulation_controller.py", line 25, in __init__
+    self.K_interp = RegularGridInterpolator(
+  File "/home/can-02/.local/lib/python3.8/site-packages/scipy/interpolate/_rgi.py", line 242, in __init__
+    self._check_dimensionality(self.grid, self.values)
+  File "/home/can-02/.local/lib/python3.8/site-packages/scipy/interpolate/_rgi.py", line 248, in _check_dimensionality
+    _check_dimensionality(grid, values)
+  File "/home/can-02/.local/lib/python3.8/site-packages/scipy/interpolate/_rgi.py", line 45, in _check_dimensionality
+    raise ValueError("There are %d points and %d values in "
+ValueError: There are 30 points and 5 values in dimension 0
