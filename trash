@@ -2,33 +2,34 @@
 
 import rclpy
 from rclpy.node import Node
-from ackermann_msgs.msg import AckermannDriveStamped
+from std_msgs.msg import Float32
 
-class ConstantSpeedController(Node):
+class RealCarConstantSpeed(Node):
     def __init__(self):
-        super().__init__('constant_speed_controller')
+        super().__init__('real_car_constant_speed')
 
-        # Create publisher to /drive
-        self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
+        # Publishers for VESC topics
+        self.motor_pub = self.create_publisher(Float32, '/vesc/commands/motor', 10)
+        self.servo_pub = self.create_publisher(Float32, '/vesc/commands/servo', 10)
 
-        # Set desired control parameters
-        self.target_speed = 1.5  # m/s
-        self.target_steering_angle = 0.0  # radians
+        self.target_speed = 1.5  # m/s equivalent (depends on VESC config)
+        self.target_steering = 0.0  # radians (center)
 
-        # Run control loop at 50 Hz
-        self.create_timer(0.02, self.publish_drive_command)
+        self.create_timer(0.05, self.control_loop)
+        self.get_logger().info("Publishing constant motor and steering commands...")
 
-        self.get_logger().info("Constant Speed Controller started.")
+    def control_loop(self):
+        motor_msg = Float32()
+        motor_msg.data = self.target_speed
+        self.motor_pub.publish(motor_msg)
 
-    def publish_drive_command(self):
-        msg = AckermannDriveStamped()
-        msg.drive.speed = self.target_speed
-        msg.drive.steering_angle = self.target_steering_angle
-        self.drive_pub.publish(msg)
+        servo_msg = Float32()
+        servo_msg.data = self.target_steering
+        self.servo_pub.publish(servo_msg)
 
 def main(args=None):
     rclpy.init(args=args)
-    node = ConstantSpeedController()
+    node = RealCarConstantSpeed()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
