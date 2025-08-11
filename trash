@@ -1,65 +1,34 @@
-# ~/Desktop/f1tenth_ws/src/adp_controller/adp_controller/output_regulation_controller.py
-
 #!/usr/bin/env python3
 
 import rclpy
 from rclpy.node import Node
-import numpy as np
-import os
-from std_msgs.msg import Float32MultiArray
-from nav_msgs.msg import Odometry
 from ackermann_msgs.msg import AckermannDriveStamped
-from ament_index_python.packages import get_package_share_directory
 
-
-class OutputRegulationController(Node):
+class ConstantSpeedController(Node):
     def __init__(self):
-        super().__init__('output_regulation_control')
+        super().__init__('constant_speed_controller')
 
-        # === Load parameters === #
-        utils_dir = os.path.join(get_package_share_directory('adp_controller'), 'scripts', 'utils')
-        self.K = np.load(os.path.join(utils_dir, "K_star.npy"))            # shape: (1, 4)
-        self.L = np.load(os.path.join(utils_dir, "L_star.npy"))            # shape: (1, qm)
-        self.E_d = np.load(os.path.join(utils_dir, "E_d.npy"))            # shape: (qm, qm)
-        self.kappa_coeffs = np.load(os.path.join(utils_dir, "kappa_coeffs.npy"))  # shape: (qm,)
-
-        # === Initialize state === #
-        self.w = np.zeros((len(self.kappa_coeffs),))  # exosystem state
-        self.w[0] = 1.0
-        self.frenet_errors = None
-
-        # === ROS Interfaces === #
-        self.create_subscription(Float32MultiArray, '/frenet_errors', self.frenet_callback, 10)
-        self.create_subscription(Odometry, '/ego_racecar/odom', self.odom_callback, 10)
+        # Create publisher to /drive
         self.drive_pub = self.create_publisher(AckermannDriveStamped, '/drive', 10)
-        self.create_timer(0.02, self.control_loop)  # 50 Hz
 
-        self.get_logger().info("Output Regulation Controller Initialized")
+        # Set desired control parameters
+        self.target_speed = 1.5  # m/s
+        self.target_steering_angle = 0.0  # radians
 
-    def frenet_callback(self, msg):
-        self.frenet_errors = msg.data
+        # Run control loop at 50 Hz
+        self.create_timer(0.02, self.publish_drive_command)
 
-    def odom_callback(self, msg):
-        # Update exosystem
-        self.w = self.E_d @ self.w
+        self.get_logger().info("Constant Speed Controller started.")
 
-    def control_loop(self):
-        if self.frenet_errors is None:
-            return
-
-        e_y, dot_e_y, e_psi, dot_e_psi, _ = self.frenet_errors
-        x = np.array([e_y, dot_e_y, e_psi, dot_e_psi])
-        u = float(-np.dot(self.K, x) + np.dot(self.L, self.w))
-
+    def publish_drive_command(self):
         msg = AckermannDriveStamped()
-        msg.drive.steering_angle = np.clip(u, -0.4189, 0.4189)
-        msg.drive.speed = 1.5
+        msg.drive.speed = self.target_speed
+        msg.drive.steering_angle = self.target_steering_angle
         self.drive_pub.publish(msg)
-
 
 def main(args=None):
     rclpy.init(args=args)
-    node = OutputRegulationController()
+    node = ConstantSpeedController()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
