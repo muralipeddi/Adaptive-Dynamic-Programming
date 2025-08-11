@@ -1,35 +1,47 @@
 #!/usr/bin/env python3
-
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32
+from ackermann_msgs.msg import AckermannDriveStamped
 
-class RealCarConstantSpeed(Node):
+class ConstantSpeedDriver(Node):
     def __init__(self):
-        super().__init__('real_car_constant_speed')
+        super().__init__('constant_speed_driver')
 
-        # Publishers for VESC topics
-        self.motor_pub = self.create_publisher(Float32, '/vesc/commands/motor', 10)
-        self.servo_pub = self.create_publisher(Float32, '/vesc/commands/servo', 10)
+        # Parameters (override via --ros-args -p ...)
+        self.declare_parameter('topic', '/drive')
+        self.declare_parameter('speed', 1.0)           # m/s
+        self.declare_parameter('steering_angle', 0.0)  # rad
+        self.declare_parameter('rate_hz', 20.0)
 
-        self.target_speed = 1.5  # m/s equivalent (depends on VESC config)
-        self.target_steering = 0.0  # radians (center)
+        topic = self.get_parameter('topic').get_parameter_value().string_value
+        self.pub = self.create_publisher(AckermannDriveStamped, topic, 10)
 
-        self.create_timer(0.05, self.control_loop)
-        self.get_logger().info("Publishing constant motor and steering commands...")
+        self.speed = self.get_parameter('speed').get_parameter_value().double_value
+        self.steering = self.get_parameter('steering_angle').get_parameter_value().double_value
+        rate_hz = self.get_parameter('rate_hz').get_parameter_value().double_value
 
-    def control_loop(self):
-        motor_msg = Float32()
-        motor_msg.data = self.target_speed
-        self.motor_pub.publish(motor_msg)
+        self.timer = self.create_timer(1.0 / rate_hz, self._tick)
+        self.get_logger().info(
+            f'Publishing constant speed {self.speed:.3f} m/s, steering {self.steering:.3f} rad on {topic} @ {rate_hz:.0f} Hz'
+        )
 
-        servo_msg = Float32()
-        servo_msg.data = self.target_steering
-        self.servo_pub.publish(servo_msg)
+    def _tick(self):
+        msg = AckermannDriveStamped()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.drive.speed = float(self.speed)
+        msg.drive.steering_angle = float(self.steering)
+        self.pub.publish(msg)
 
-def main(args=None):
-    rclpy.init(args=args)
-    node = RealCarConstantSpeed()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+def main():
+    rclpy.init()
+    node = ConstantSpeedDriver()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
